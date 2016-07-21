@@ -24,13 +24,13 @@ void Sub::update_surface_and_bottom_detector()
 
 
 		if(ap.at_surface) {
-			set_surfaced(current_depth > g.surface_depth/100.0 - 0.05); // add a 5cm buffer so it doesn't trigger too often
+			set_surfaced(current_depth > g.surface_depth/100.0 - 0.15); // add a 15cm buffer so it doesn't trigger too often
 		} else {
 			set_surfaced(current_depth > g.surface_depth/100.0); // If we are above surface depth, we are surfaced
 		}
 
 
-		if(motors.limit.throttle_lower && vel_stationary) {
+		if(motors.armed() && motors.limit.throttle_lower && vel_stationary) {
 			// bottom criteria met - increment the counter and check if we've triggered
 			if( bottom_detector_count < ((float)BOTTOM_DETECTOR_TRIGGER_SEC)*MAIN_LOOP_RATE) {
 				bottom_detector_count++;
@@ -43,7 +43,7 @@ void Sub::update_surface_and_bottom_detector()
 		}
 
 	// with no external baro, the only thing we have to go by is a vertical velocity estimate
-	} else if (vel_stationary) {
+	} else if (motors.armed() && vel_stationary) {
 		if(motors.limit.throttle_upper) {
 
 			// surface criteria met, increment counter and see if we've triggered
