@@ -48,17 +48,17 @@ void AP_MotorsBlueROV6DOF::setup_motors()
 		MOT_3_ROLL_FACTOR = -0.5,
 		MOT_3_PITCH_FACTOR = 0.5,
 		MOT_3_YAW_FACTOR = 0,
-		MOT_3_THROTTLE_FACTOR = 0.45,
-		MOT_3_FORWARD_FACTOR = 0.0,
-		MOT_3_STRAFE_FACTOR = 0.0,
+		MOT_3_THROTTLE_FACTOR = 0.5,
+		MOT_3_FORWARD_FACTOR = -0.25, // decoupling
+		MOT_3_STRAFE_FACTOR = -0.2, // decoupling
 
 		//Front left downward facing
 		MOT_4_ROLL_FACTOR = 0.5,
 		MOT_4_PITCH_FACTOR = 0.5,
 		MOT_4_YAW_FACTOR = 0,
-		MOT_4_THROTTLE_FACTOR = 0.45,
-		MOT_4_FORWARD_FACTOR = 0.0,
-		MOT_4_STRAFE_FACTOR = 0.0,
+		MOT_4_THROTTLE_FACTOR = 0.5,
+		MOT_4_FORWARD_FACTOR = -0.25, // decoupling
+		MOT_4_STRAFE_FACTOR = 0.2, // decoupling
 
 		//Rear motor downward facing
 		MOT_5_ROLL_FACTOR = 0,
