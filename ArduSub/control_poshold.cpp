@@ -37,7 +37,12 @@ void Sub::poshold_run()
 {
 	uint32_t tnow = millis();
 
-    Vector3f vel = inertial_nav.get_velocity();
+    const Vector3f& vel = inertial_nav.get_velocity();
+
+    // convert inertial nav earth-frame velocities to body-frame
+    // To-Do: move this to AP_Math (or perhaps we already have a function to do this)
+    float vel_fw = vel.x*ahrs.cos_yaw() + vel.y*ahrs.sin_yaw();
+    float vel_right = -vel.x*ahrs.sin_yaw() + vel.y*ahrs.cos_yaw();
 
     // if not auto armed or motor interlock not enabled set throttle to zero and exit immediately
     if (!motors.armed() || !ap.auto_armed || !motors.get_interlock()) {
@@ -61,7 +66,7 @@ void Sub::poshold_run()
 	// get pilot's desired yaw rate
 	float target_yaw_rate = get_pilot_desired_yaw_rate(channel_yaw->get_control_in());
 
-	// get pilot desired climb rate (for alt-hold mode and take-off)
+	// get pilot desired climb rate
 	float target_climb_rate = get_pilot_desired_climb_rate(channel_throttle->get_control_in());
 	target_climb_rate = constrain_float(target_climb_rate, -g.pilot_velocity_z_max, g.pilot_velocity_z_max);
 
@@ -89,7 +94,7 @@ void Sub::poshold_run()
 		wp_nav.init_loiter_target();
 	} else {
 		if(tnow > last_poshold_message_ms + 1500) {
-			gcs_send_text_fmt(MAV_SEVERITY_INFO, "loitering: %f, %f", vel.x, vel.y);
+			gcs_send_text_fmt(MAV_SEVERITY_INFO, "loitering: %f, %f", vel_fw, vel_right);
 			last_poshold_message_ms = tnow;
 		}
 		lateral_out = (float)poshold_lateral/(float)aparm.angle_max;
