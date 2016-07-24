@@ -24,7 +24,7 @@ void Sub::update_surface_and_bottom_detector()
 
 
 		if(ap.at_surface) {
-			set_surfaced(current_depth > g.surface_depth/100.0 - 0.15); // add a 15cm buffer so it doesn't trigger too often
+			set_surfaced(current_depth > g.surface_depth/100.0 - 0.05); // add a 5cm buffer so it doesn't trigger too often
 		} else {
 			set_surfaced(current_depth > g.surface_depth/100.0); // If we are above surface depth, we are surfaced
 		}

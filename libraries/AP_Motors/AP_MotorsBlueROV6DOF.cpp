@@ -34,7 +34,7 @@ void AP_MotorsBlueROV6DOF::setup_motors()
 		MOT_1_YAW_FACTOR = -1.0,
 		MOT_1_THROTTLE_FACTOR = 0.0,
 		MOT_1_FORWARD_FACTOR = 1.0,
-		MOT_1_STRAFE_FACTOR = 0.0,
+		MOT_1_STRAFE_FACTOR = 0.15, // decoupling
 
 		//Mid left backward facing
 		MOT_2_ROLL_FACTOR = 0,
@@ -42,30 +42,30 @@ void AP_MotorsBlueROV6DOF::setup_motors()
 		MOT_2_YAW_FACTOR = 1.0,
 		MOT_2_THROTTLE_FACTOR = 0.0,
 		MOT_2_FORWARD_FACTOR = 1.0,
-		MOT_2_STRAFE_FACTOR = 0.0,
+		MOT_2_STRAFE_FACTOR = -0.15, // decoupling
 
 		//Front right downward facing
 		MOT_3_ROLL_FACTOR = -0.5,
 		MOT_3_PITCH_FACTOR = 0.5,
 		MOT_3_YAW_FACTOR = 0,
 		MOT_3_THROTTLE_FACTOR = 0.5,
-		MOT_3_FORWARD_FACTOR = -0.25, // decoupling
-		MOT_3_STRAFE_FACTOR = -0.2, // decoupling
+		MOT_3_FORWARD_FACTOR = -0.08, // decoupling
+		MOT_3_STRAFE_FACTOR = -0.4, // decoupling
 
 		//Front left downward facing
 		MOT_4_ROLL_FACTOR = 0.5,
 		MOT_4_PITCH_FACTOR = 0.5,
 		MOT_4_YAW_FACTOR = 0,
 		MOT_4_THROTTLE_FACTOR = 0.5,
-		MOT_4_FORWARD_FACTOR = -0.25, // decoupling
-		MOT_4_STRAFE_FACTOR = 0.2, // decoupling
+		MOT_4_FORWARD_FACTOR = -0.08, // decoupling
+		MOT_4_STRAFE_FACTOR = 0.4, // decoupling
 
 		//Rear motor downward facing
 		MOT_5_ROLL_FACTOR = 0,
 		MOT_5_PITCH_FACTOR = -1.0,
 		MOT_5_YAW_FACTOR = 0.0,
 		MOT_5_THROTTLE_FACTOR = 1.0,
-		MOT_5_FORWARD_FACTOR = 0.0,
+		MOT_5_FORWARD_FACTOR = 0.16, // decoupling
 		MOT_5_STRAFE_FACTOR = 0.0,
 
 		//Bottom motor facing left
