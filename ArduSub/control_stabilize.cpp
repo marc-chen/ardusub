@@ -2,9 +2,8 @@
 
 #include "Sub.h"
 
-/*
- * control_stabilize.pde - init and run calls for stabilize flight mode
- */
+static uint32_t last_stabilize_message_ms = 0;
+uint32_t last_pilot_yaw;
 
 // stabilize_init - initialise stabilize controller
 bool Sub::stabilize_init(bool ignore_checks)
@@ -15,6 +14,7 @@ bool Sub::stabilize_init(bool ignore_checks)
     }
     // set target altitude to zero for reporting
     pos_control.set_alt_target(0);
+    last_pilot_yaw = ahrs.yaw_sensor;
 
     return true;
 }
@@ -23,6 +23,7 @@ bool Sub::stabilize_init(bool ignore_checks)
 // should be called at 100hz or more
 void Sub::stabilize_run()
 {
+	uint32_t tnow = millis();
     float target_roll, target_pitch;
     float target_yaw_rate;
     float pilot_throttle_scaled;
@@ -31,6 +32,7 @@ void Sub::stabilize_run()
     if (!motors.armed() || !motors.get_interlock()) {
         motors.set_desired_spool_state(AP_Motors::DESIRED_SPIN_WHEN_ARMED);
         attitude_control.set_throttle_out_unstabilized(0,true,g.throttle_filt);
+        last_pilot_yaw = ahrs.yaw_sensor;
         return;
     }
 
@@ -50,9 +52,20 @@ void Sub::stabilize_run()
     pilot_throttle_scaled = get_pilot_desired_throttle(channel_throttle->get_control_in());
 
     // call attitude controller
-    attitude_control.input_euler_angle_roll_pitch_euler_rate_yaw(target_roll, target_pitch, target_yaw_rate, get_smoothing_gain());
+	// update attitude controller targets
+	if (target_yaw_rate != 0) {
+		// call attitude controller with rate yaw determined by pilot input
+		attitude_control.input_euler_angle_roll_pitch_euler_rate_yaw(target_roll, target_pitch, target_yaw_rate, get_smoothing_gain());
+		last_pilot_yaw = ahrs.yaw_sensor;
+	} else {
+		if(tnow > last_stabilize_message_ms + 1500) {
+			gcs_send_text_fmt(MAV_SEVERITY_INFO, "target: %d", last_pilot_yaw);
+			last_stabilize_message_ms = tnow;
+		}
 
-    // body-frame rate controller is run directly from 100hz loop
+		// call attitude controller to hold absolute absolute bearing
+		attitude_control.input_euler_angle_roll_pitch_yaw(target_roll, target_pitch, last_pilot_yaw, true, get_smoothing_gain());
+	}
 
     // output pilot's throttle
     attitude_control.set_throttle_out(pilot_throttle_scaled, false, g.throttle_filt);
