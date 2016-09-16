@@ -22,6 +22,9 @@ public:
     	}
     }
 
+    /*
+     * �����Ӧ�Ĺ��ܶ���
+     */
     // button function enum
     // value list for parameter convenience:
     // @Values: 0:Disabled,1:shift,2:arm_toggle,3:arm,4:disarm,5:mode_toggle,6:mode_stab,7:mode_althold,21:mount_center,22:mount_tilt_up,23:mount_tilt_down,24:camera_trigger,31:light1_cycle,32:lights1_brighter,

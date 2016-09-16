@@ -483,6 +483,7 @@ void Sub::print_blanks(int16_t num)
     }
 }
 
+// 打印分隔线，40个 -
 void Sub::print_divider(void)
 {
     for (int i = 0; i < 40; i++) {

@@ -123,6 +123,10 @@ void AP_MotorsMatrix::output_to_motors()
     for (i=0; i<AP_MOTORS_MAX_NUM_MOTORS; i++) {
         if (motor_enabled[i]) {
             rc_write(i, motor_out[i]);
+
+            /*
+             * TODO: log
+             */
         }
     }
     hal.rcout->push();

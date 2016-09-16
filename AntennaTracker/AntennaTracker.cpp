@@ -25,6 +25,10 @@
 #define SCHED_TASK(func, _interval_ticks, _max_time_micros) SCHED_TASK_CLASS(Tracker, &tracker, func, _interval_ticks, _max_time_micros)
 
 /*
+ * 字面上看，是天线相关的任务，都在这里
+ * MAVLink相关的消息处理，也在这里
+ */
+/*
   scheduler table - all regular tasks apart from the fast_loop()
   should be listed here, along with how often they should be called
   (in 20ms units) and the maximum time they are expected to take (in

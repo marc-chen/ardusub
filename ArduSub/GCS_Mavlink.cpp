@@ -967,6 +967,7 @@ void GCS_MAVLINK_Sub::handleMessage(mavlink_message_t* msg)
             mavlink_msg_command_ack_send_buf(msg, chan, MAVLINK_MSG_ID_SET_MODE, MAV_RESULT_FAILED);
         }
 #else
+        // TODO，模式切换
         handle_set_mode(msg, FUNCTOR_BIND(&sub, &Sub::gcs_set_mode, bool, uint8_t));
 #endif
         break;
@@ -1153,6 +1154,7 @@ void GCS_MAVLINK_Sub::handleMessage(mavlink_message_t* msg)
         break;
     }
 
+    // 这个命令以包含很多子命令
     // Pre-Flight calibration requests
     case MAVLINK_MSG_ID_COMMAND_LONG:       // MAV ID: 76
     {
@@ -1161,6 +1163,25 @@ void GCS_MAVLINK_Sub::handleMessage(mavlink_message_t* msg)
         mavlink_msg_command_long_decode(msg, &packet);
 
         switch(packet.command) {
+
+        /*
+         * marc, 2016/9/9，模式切换消息处理
+         * 之前没有处理MAV_CMD_DO_SET_MODE，但模式也是生效的，奇怪
+         * 可能手柄走的另外的路径
+         */
+        case MAV_CMD_DO_SET_MODE:
+        {
+            control_mode_t mode = (control_mode_t)packet.param1;
+            sub.gcs_send_text_fmt(MAV_SEVERITY_INFO, "MAV_CMD_DO_SET_MODE mode= %d", mode);
+            if (mode == STABILIZE) {
+                mode = MANUAL;
+                sub.gcs_send_text_fmt(MAV_SEVERITY_INFO, "MAV_CMD_DO_SET_MODE convert STABILIZE to MANUAL");
+            }
+            if (sub.set_mode(mode, MODE_REASON_GCS_COMMAND)) {
+                result = MAV_RESULT_ACCEPTED;
+            }
+            break;
+        }
 
         case MAV_CMD_START_RX_PAIR:
             // initiate bind procedure
@@ -1189,6 +1210,9 @@ void GCS_MAVLINK_Sub::handleMessage(mavlink_message_t* msg)
         }
 
 
+        /*
+         * TODO：模式切换
+         */
         case MAV_CMD_NAV_LOITER_UNLIM:
             if (sub.set_mode(LOITER, MODE_REASON_GCS_COMMAND)) {
                 result = MAV_RESULT_ACCEPTED;
@@ -1563,6 +1587,11 @@ void GCS_MAVLINK_Sub::handleMessage(mavlink_message_t* msg)
 
             break;
         }
+
+
+        /*
+         * 这里的模式切换与 SOLO 有关，应该用不到
+         */
 
         /* Solo user presses Fly button */
 		case MAV_CMD_SOLO_BTN_FLY_CLICK: {

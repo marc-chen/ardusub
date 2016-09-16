@@ -193,7 +193,8 @@ const AP_Param::Info Sub::var_info[] = {
     // @Description: Controls whether failsafe will be invoked (and what action to take) when connection with Ground station is lost for at least 5 seconds. NB. The GCS Failsafe is only active when RC_OVERRIDE is being used to control the vehicle.
     // @Values: 0:Disabled,1:Enabled always RTL,2:Enabled Continue with Mission in Auto Mode
     // @User: Standard
-    GSCALAR(failsafe_gcs, "FS_GCS_ENABLE", FS_GCS_ENABLED_ALWAYS_RTL),
+    // sub模式下，回不到起点，禁用得了
+    GSCALAR(failsafe_gcs, "FS_GCS_ENABLE", FS_GCS_DISABLED),
 
     // @Param: GPS_HDOP_GOOD
     // @DisplayName: GPS Hdop Good
@@ -450,7 +451,8 @@ const AP_Param::Info Sub::var_info[] = {
     // @Values: 0:Disabled, 1:Enabled, -3:Skip Baro, -5:Skip Compass, -9:Skip GPS, -17:Skip INS, -33:Skip Params/Rangefinder, -65:Skip RC, 127:Skip Voltage
     // @Bitmask: 0:All,1:Baro,2:Compass,3:GPS,4:INS,5:Parameters+Rangefinder,6:RC,7:Voltage
     // @User: Standard
-    GSCALAR(arming_check, "ARMING_CHECK",           -66),
+    // sub需要禁用，否则无法成功 arm
+    GSCALAR(arming_check, "ARMING_CHECK",           0),
 
     // @Param: DISARM_DELAY
     // @DisplayName: Disarm delay

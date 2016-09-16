@@ -7,6 +7,23 @@
  *      logic for individual flight modes is in control_acro.pde, control_stabilize.pde, etc
  */
 
+// 地面站来的请求，STABILIZE模式转成MANUAL，没有直接改 set_mode，担心造成状态不一致
+bool Sub::gcs_set_mode(uint8_t mode)
+{
+    gcs_send_text_fmt(MAV_SEVERITY_INFO, "gcs_set_mode %d", mode);
+
+#ifdef MARC_CONVERT_MODE_STABILIZE_TO_MANUAL
+    control_mode_t mode2 = (control_mode_t)mode;
+    if (mode2 == STABILIZE) {
+        mode2 = MANUAL;
+        gcs_send_text_fmt(MAV_SEVERITY_INFO, "convert STABILIZE to MANUAL");
+    }
+    return set_mode(mode2, MODE_REASON_GCS_COMMAND);
+#else
+    return set_mode((control_mode_t)mode, MODE_REASON_GCS_COMMAND);
+#endif
+}
+
 // set_mode - change flight mode and perform any necessary initialisation
 // optional force parameter used to force the flight mode change (used only first time mode is set)
 // returns true if mode was succesfully set
@@ -25,6 +42,11 @@ bool Sub::set_mode(control_mode_t mode, mode_reason_t reason)
     	control_mode_reason = reason;
         return true;
     }
+
+    /*
+     * TODO:  发消息，状态变了
+     */
+    gcs_send_text_fmt(MAV_SEVERITY_INFO, "change mode from %d to %d, reason %d", control_mode, mode, reason);
 
     switch(mode) {
         case ACRO:
@@ -136,6 +158,9 @@ bool Sub::set_mode(control_mode_t mode, mode_reason_t reason)
     return success;
 }
 
+/*
+ * 进入模式后，持续更新模式状态
+ */
 // update_flight_mode - calls the appropriate attitude controllers based on flight mode
 // called at 100hz or more
 void Sub::update_flight_mode()

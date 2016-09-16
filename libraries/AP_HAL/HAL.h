@@ -92,8 +92,10 @@ public:
     AP_HAL::Storage*    storage;
     AP_HAL::UARTDriver* console;
     AP_HAL::GPIO*       gpio;
+
     AP_HAL::RCInput*    rcin;
     AP_HAL::RCOutput*   rcout;
+
     AP_HAL::Scheduler*  scheduler;
     AP_HAL::Util        *util;
     AP_HAL::OpticalFlow *opticalflow;

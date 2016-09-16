@@ -84,6 +84,12 @@ static void failsafe_check_static()
 void Sub::init_ardupilot()
 {
     if (!hal.gpio->usb_connected()) {
+        /*
+         * http://www.zhihu.com/question/21240031
+         * ZigBee就是一种便宜的，低功耗的近距离无线组网通讯技术。
+         * XBee模块是美国DIGI的Zigbee模块，XBEE只是型号，是一种远距离低功耗的数传模块，频段有2.4G，915M，868M三种同时可兼容802.15.4协议。
+         * 可以理解成XBee模块是基于Zigbee的一种具体产品，Zigbee是一种技术。
+         */
         // USB is not connected, this means UART0 may be a Xbee, with
         // its darned bricking problem. We can't write to it for at
         // least one second after powering up. Simplest solution for
@@ -92,9 +98,11 @@ void Sub::init_ardupilot()
         delay(1000);
     }
 
+    // USB，或者数传
     // initialise serial port
     serial_manager.init_console();
 
+    // cliSerial 是 hal->console 的别名
     cliSerial->printf("\n\nInit " FIRMWARE_STRING
                          "\n\nFree RAM: %u\n",
                       (unsigned)hal.util->available_memory());
@@ -102,7 +110,7 @@ void Sub::init_ardupilot()
     //
     // Report firmware version code expect on console (check of actual EEPROM format version is done in load_parameters function)
     //
-    report_version();
+    report_version();   // printf
 
     // load parameters from EEPROM
     load_parameters();

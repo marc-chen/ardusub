@@ -952,12 +952,17 @@ GCS_MAVLINK::update(run_cli_fn run_cli)
     mavlink_status_t status;
     status.packet_rx_drop_count = 0;
 
+    // 逐个字节处理
     // process received bytes
     uint16_t nbytes = comm_get_available(chan);
     for (uint16_t i=0; i<nbytes; i++)
     {
         uint8_t c = comm_receive_ch(chan);
 
+        /*
+         * run_cli 传过来的是NULL，可能是一种机制，可以让用户代码先运行
+         * 点击enter键3次，而且没有收到心跳包？
+         */
         if (run_cli) {
             /* allow CLI to be started by hitting enter 3 times, if no
              *  heartbeat packets have been received */
@@ -974,6 +979,7 @@ GCS_MAVLINK::update(run_cli_fn run_cli)
             }
         }
 
+        // 尝试拼成一条完整的消息
         // Try to get a new message
         if (mavlink_parse_char(chan, c, &msg, &status)) {
             // we exclude radio packets to make it possible to use the

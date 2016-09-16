@@ -8,6 +8,10 @@
 #include <AP_NavEKF/AP_Nav_Common.h> // definitions shared by inertial and ekf nav filters
 
 /*
+ * �����������λ��+�ٶ�
+ * �ӿ��У�һ����update�����ڸ���λ�ú��ٶȣ�������get����
+ */
+/*
  * AP_InertialNav blends accelerometer data with gps and barometer data to improve altitude and position hold.
  *
  * Most of the functions have to be called at 100Hz. (see defines above)

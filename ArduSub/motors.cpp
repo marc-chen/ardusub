@@ -23,14 +23,15 @@ void Sub::arm_motors_check()
 
     int16_t tmp = channel_yaw->get_control_in();
 
-    // full right
-    if (tmp > 4000) {
+    // full right，四轴上，方向打到最后用于arm，即解锁
+    if (tmp > 4000) {   // TODO: 4000是什么意思？
 
         // increase the arming counter to a maximum of 1 beyond the auto trim counter
         if( arming_counter <= AUTO_TRIM_DELAY ) {
             arming_counter++;
         }
 
+        // 2秒就arm？4轴飞机是5秒
         // arm the motors and configure for flight
         if (arming_counter == ARM_DELAY && !motors.armed()) {
             // reset arming counter if arming fail
@@ -46,7 +47,7 @@ void Sub::arm_motors_check()
             auto_disarm_begin = millis();
         }
 
-    // full left
+    // full left，四轴上，方向打到最左，用于锁定，猜测sub永远不用自动锁定，因为永远不会land
     }else if (tmp < -4000) {
         if (!mode_has_manual_throttle(control_mode) && !ap.land_complete) {
             arming_counter = 0;
@@ -110,6 +111,7 @@ void Sub::auto_disarm_check()
     }
 }
 
+// 通过地面站来arm时，参数arming_from_gcs总会是True
 // init_arm_motors - performs arming process including initialisation of barometer and gyros
 //  returns false if arming failed because of pre-arm checks, arming checks or a gyro calibration failure
 bool Sub::init_arm_motors(bool arming_from_gcs)

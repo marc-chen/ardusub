@@ -382,6 +382,11 @@ void Sub::pre_arm_rc_checks()
     set_pre_arm_rc_check(true);
 }
 
+/*
+ * 除非当前模式不需要GPS，否则必须GPS已经定位到位置了才会返回True
+ * 所以，定点模式下，如果GPS没有信号，是不会arm成功的
+ * 错误返航其实也需要GPS，但这里没有检查，难道觉得可以用惯性导航？
+ */
 // performs pre_arm gps related checks and returns true if passed
 bool Sub::pre_arm_gps_checks(bool display_failure)
 {
@@ -512,6 +517,9 @@ bool Sub::arm_checks(bool display_failure, bool arming_from_gcs)
     start_logging();
     #endif
 
+    /*
+     * 加速度计和陀螺仪检查，惯性导航依赖这个东西，但是说明上要禁用 arm_check，所以这里的检查会忽略
+     */
     // check accels and gyro are healthy
     if ((g.arming_check == ARMING_CHECK_ALL) || (g.arming_check & ARMING_CHECK_INS)) {
         //check if accelerometers have calibrated and require reboot
@@ -543,6 +551,9 @@ bool Sub::arm_checks(bool display_failure, bool arming_from_gcs)
         }
     }
 
+    /*
+     * 这里的告警信息也是常见的arm时的错误，可以屏蔽？
+     */
     // always check if inertial nav has started and is ready
     if (!ahrs.healthy()) {
         if (display_failure) {

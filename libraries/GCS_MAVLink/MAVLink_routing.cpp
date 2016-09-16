@@ -32,6 +32,18 @@ extern const AP_HAL::HAL& hal;
 MAVLink_routing::MAVLink_routing(void) : num_routes(0) {}
 
 /*
+ * TODO: MAVLink调度理论!!!值得学习
+ *
+ * 本地处理：飞控会处理满足下列任一条件的消息：
+ *   target_system为空
+ *   target_system为0
+ *   target_system满足，没有target_component字段，或者属于自己
+ *   target_system满足，target_component不属于自己，但 。。。,see 1e)
+ *
+ * 转发：。。。
+ */
+
+/*
   forward a MAVLink message to the right port. This also
   automatically learns the route for the sender if it is not
   already known.

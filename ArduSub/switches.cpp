@@ -43,7 +43,14 @@ void Sub::read_control_switch()
 
     if (control_switch_changed && sufficient_time_elapsed && failsafe_disengaged) {
         // set flight mode and simple mode setting
-    	if (set_mode((control_mode_t)flight_modes[switch_position].get(), MODE_REASON_TX_COMMAND)) {
+
+        control_mode_t mode = (control_mode_t)flight_modes[switch_position].get();
+        if (mode == STABILIZE) {
+            mode = MANUAL;
+            gcs_send_text_fmt(MAV_SEVERITY_INFO, "switch STABILIZE to MANUAL");
+        }
+
+    	if (set_mode(mode, MODE_REASON_TX_COMMAND)) {
             // play a tone
             if (control_switch_state.debounced_switch_position != -1) {
                 // alert user to mode change failure (except if autopilot is just starting up)

@@ -3,8 +3,13 @@
 #include "Sub.h"
 
 
+/*
+ * 这里好像只处理姿态相关的输入，没有模式
+ */
+
 // Function that will read the radio data, limit servos and trigger a failsafe
 // ----------------------------------------------------------------------------
+
 
 void Sub::default_dead_zones()
 {

@@ -57,6 +57,7 @@
 //////////////////////////////////////////////////////////////////////////////
 // FRAME_CONFIG
 //
+
 #ifndef FRAME_CONFIG
  # define FRAME_CONFIG   VECTORED6DOF_FRAME
 #endif
@@ -282,19 +283,19 @@
 //
 
 #ifndef FLIGHT_MODE_1
- # define FLIGHT_MODE_1                  STABILIZE
+ # define FLIGHT_MODE_1                  MANUAL
 #endif
 #ifndef FLIGHT_MODE_2
- # define FLIGHT_MODE_2                  STABILIZE
+ # define FLIGHT_MODE_2                  ALT_HOLD
 #endif
 #ifndef FLIGHT_MODE_3
  # define FLIGHT_MODE_3                  STABILIZE
 #endif
 #ifndef FLIGHT_MODE_4
- # define FLIGHT_MODE_4                  STABILIZE
+ # define FLIGHT_MODE_4                  MANUAL
 #endif
 #ifndef FLIGHT_MODE_5
- # define FLIGHT_MODE_5                  STABILIZE
+ # define FLIGHT_MODE_5                  ALT_HOLD
 #endif
 #ifndef FLIGHT_MODE_6
  # define FLIGHT_MODE_6                  STABILIZE
@@ -622,3 +623,11 @@
 #ifndef FRSKY_TELEM_ENABLED
   #  define FRSKY_TELEM_ENABLED          ENABLED
 #endif
+
+
+/*
+ * marc, 2016/9/4，将STABILIZE模式映射成MANUAL，方便测试
+ */
+#define MARC_CONVERT_MODE_STABILIZE_TO_MANUAL
+
+

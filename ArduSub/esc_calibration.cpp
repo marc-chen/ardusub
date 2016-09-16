@@ -97,7 +97,8 @@ void Sub::esc_calibration_passthrough()
         delay(10);
 
         // pass through to motors
-        motors.set_throttle_passthrough_for_esc_calibration(channel_throttle->get_control_in() / 1000.0f);    }
+        motors.set_throttle_passthrough_for_esc_calibration(channel_throttle->get_control_in() / 1000.0f);
+    }
 }
 
 // esc_calibration_auto - calibrate the ESCs automatically using a timer and no pilot input

@@ -13,21 +13,35 @@ namespace {
 	float cam_tilt_alpha = 0.97;
 	int16_t lights1 = 1100;
 	int16_t lights2 = 1100;
+
+	// TODO: 这些是偏移量吗？用于校准？
 	int16_t rollTrim = 0;
 	int16_t pitchTrim = 0;
 	int16_t zTrim = 0;
 	int16_t xTrim = 0;
 	int16_t yTrim = 0;
+
 	int16_t video_switch = 1100;
 	int16_t x_last, y_last, z_last;
 	uint16_t buttons_prev;
+
 	float gain = 0.5;
 	float maxGain = 1.0;
 	float minGain = 0.25;
 	int8_t numGainSettings = 4;
 }
 
-void Sub::transform_manual_control_to_rc_override(int16_t x, int16_t y, int16_t z, int16_t r, uint16_t buttons) {
+/*
+ * 手柄指令处理
+ * 忽略按键长按，只处理按下动作
+ * TODO: 按键校验的意义，在哪里体现？
+ * 按键操作转化为 hal.rcin->set_overrides
+ */
+void Sub::transform_manual_control_to_rc_override(int16_t x, int16_t y, int16_t z
+        , int16_t r
+        , uint16_t buttons  // 按下的按键，每个bit位对应一个按键
+        )
+{
 	int16_t channels[11];
 
 	uint32_t tnow_ms = millis();
@@ -37,14 +51,19 @@ void Sub::transform_manual_control_to_rc_override(int16_t x, int16_t y, int16_t 
 	int16_t rpyCenter = 1500;
 	int16_t throttleBase = 1500-500*throttleScale;
 
+	// shift 键按下时，按键的功能会转义，所有每个按键在配置时都可以配置2个功能，一个对应正常，一个对应shift
 	bool shift = false;
-	static uint32_t buttonDebounce;
 
+	static uint32_t buttonDebounce; // 前一个 tnow_ms
+
+	// 每100ms只读一次按键信息
 	// Debouncing timer
 	if ( tnow_ms - buttonDebounce > 100 ) {
 		// Detect if any shift button is pressed
 		for ( uint8_t i = 0 ; i < 16 ; i++ ) {
-			if ( (buttons & (1 << i)) && get_button(i)->function() == JSButton::button_function_t::k_shift ) { shift = true; }
+			if ( (buttons & (1 << i))
+			        && get_button(i)->function() == JSButton::button_function_t::k_shift )
+			{ shift = true; }
 		}
 
 		// Act if button is pressed
@@ -64,7 +83,10 @@ void Sub::transform_manual_control_to_rc_override(int16_t x, int16_t y, int16_t 
 	channels[1] = 1500 + rollTrim;                            // roll
 	channels[2] = constrain_int16((z+zTrim)*throttleScale+throttleBase,1100,1900);  // throttle
 	channels[3] = constrain_int16(r*rpyScale+rpyCenter,1100,1900);                       // yaw
+
+	// TODO: for test ?
 	channels[4] = mode;                                       // for testing only
+
 	channels[5] = constrain_int16((x+xTrim)*rpyScale+rpyCenter,1100,1900);           // forward for ROV
 	channels[6] = constrain_int16((y+yTrim)*rpyScale+rpyCenter,1100,1900);           // lateral for ROV
 	channels[7] = 0xffff;                                     // camera tilt (sent in camera_tilt_smooth)
@@ -81,7 +103,13 @@ void Sub::transform_manual_control_to_rc_override(int16_t x, int16_t y, int16_t 
 	failsafe.rc_override_active = hal.rcin->set_overrides(channels, 10);
 }
 
-void Sub::handle_jsbutton_press(uint8_t button, bool shift, bool held) {
+/*
+ * 行把按键行为转换成对应的功能设置
+ */
+void Sub::handle_jsbutton_press(uint8_t button, bool shift
+        , bool held // 按键是否长按，如果前一次处理时此按键也按下了，则为 True
+        )
+{
 	// Act based on the function assigned to this button
 	switch ( get_button(button)->function(shift) ) {
 		case JSButton::button_function_t::k_arm_toggle:

@@ -892,6 +892,9 @@ mission_failed:
 
 
 /*
+ * 自来 MAVLink是优先级比较低的逻辑 :)
+ */
+/*
  *  a delay() callback that processes MAVLink packets. We set this as the
  *  callback in long running library initialisation routines to allow
  *  MAVLink to process packets while waiting for the initialisation to
