@@ -22,6 +22,12 @@ public:
         AP_MotorsMatrix(loop_rate, speed_hz)
     {
     	AP_Param::setup_object_defaults(this, var_info);
+
+    	// Set gain to the closest notch near the lower-middle
+    	_gain = _gain_min;
+    	for ( uint8_t i = 0 ; i < _gain_steps/2-1 ; i++ ) {
+    		increase_gain();
+    	}
     };
 
     void output_min() override;
@@ -30,6 +36,12 @@ public:
 
     // output_to_motors - sends minimum values out to the motors
     void output_to_motors() override;
+
+    // gain control to scale motor outputs
+    void set_gain(float gain);
+	float get_gain();
+	void increase_gain();
+	void decrease_gain();
 
     // var_info for holding Parameter information
 	static const struct AP_Param::GroupInfo        var_info[];
@@ -42,12 +54,19 @@ protected:
     void output_armed_stabilizing() override;
 
     // Parameters
-    AP_Int8             _motor_reverse[8];
+    AP_Int8             _motor_reverse[8]; // 马达的方向，正转or反转
     AP_Float			_forwardVerticalCouplingFactor;
+    AP_Float            _gain_min;
+    AP_Float            _gain_max;
+    AP_Int8             _gain_steps;
 
+    // 6个方向的油门数值，升、降、进、退、左、右
     float               _throttle_factor[AP_MOTORS_MAX_NUM_MOTORS]; // each motors contribution to throttle (climb/descent)
     float               _forward_factor[AP_MOTORS_MAX_NUM_MOTORS]; // each motors contribution to forward/backward
     float               _lateral_factor[AP_MOTORS_MAX_NUM_MOTORS];  // each motors contribution to lateral (left/right)
+
+    // motor gain，应该是马达调整的幅度，每个马达一个？
+    float               _gain;
 };
 
 #endif  // AP_MOTORS6DOF

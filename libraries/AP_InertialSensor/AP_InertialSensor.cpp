@@ -11,7 +11,6 @@
 #include <AP_Vehicle/AP_Vehicle.h>
 
 #include "AP_InertialSensor.h"
-#include "AP_InertialSensor_BMI160.h"
 #include "AP_InertialSensor_Backend.h"
 #include "AP_InertialSensor_HIL.h"
 #include "AP_InertialSensor_L3G4200D.h"
@@ -1041,6 +1040,7 @@ void AP_InertialSensor::wait_for_sample(void)
 
     uint32_t now = AP_HAL::micros();
 
+    // 第一次进入，_next_sample_usec 为空
     if (_next_sample_usec == 0 && _delta_time <= 0) {
         // this is the first call to wait_for_sample()
         _last_sample_usec = now - _sample_period_usec;
@@ -1048,8 +1048,23 @@ void AP_InertialSensor::wait_for_sample(void)
         goto check_sample;
     }
 
+    /*
+     * 是不是应该这样？？？
+     */
+    // 下次进入时，_next_sample_usec 理论上就是当前时间
+    if (now >= _next_sample_usec) {
+        // 过了时间了，没有 delay，马上执行
+    }
+    if (now < _next_sample_usec and now >= _next_sample_usec - _sample_period_usec/8) {
+        // 还没到时间，不过也快了，只差区间的 1/8，所以直接执行吧
+    }
+    if (now < _next_sample_usec - _sample_period_usec/8) { //
+        // 时间还差点远呢，等一下先
+    }
+
     // see how long it is till the next sample is due
-    if (_next_sample_usec - now <=_sample_period_usec) {
+    // if (_next_sample_usec - now <=_sample_period_usec) {
+    if (now >= _next_sample_usec - _sample_period_usec) {
         // we're ahead on time, schedule next sample at expected period
         uint32_t wait_usec = _next_sample_usec - now;
         hal.scheduler->delay_microseconds_boost(wait_usec);
@@ -1063,12 +1078,15 @@ void AP_InertialSensor::wait_for_sample(void)
                           (unsigned)wait_usec);
         }
         _next_sample_usec += _sample_period_usec;
-    } else if (now - _next_sample_usec < _sample_period_usec/8) {
+    // } else if (_next_sample_usec > now - _sample_period_usec/8) {
+    } else if (now < _next_sample_usec + _sample_period_usec/8) {
+        // 不满足上面的条件时，必须满足这里的条件
         // we've overshot, but only by a small amount, keep on
         // schedule with no delay
         timing_printf("overshoot1 %u\n", (unsigned)(now-_next_sample_usec));
         _next_sample_usec += _sample_period_usec;
     } else {
+        // TODO: 永远不会到这里了
         // we've overshot by a larger amount, re-zero scheduling with
         // no delay
         timing_printf("overshoot2 %u\n", (unsigned)(now-_next_sample_usec));
@@ -1077,6 +1095,7 @@ void AP_InertialSensor::wait_for_sample(void)
 
 check_sample:
     if (!_hil_mode) {
+        // 主陀螺仪和加速度计失效时，启用备用设备，主、备一起最多3组
         // we also wait for at least one backend to have a sample of both
         // accel and gyro. This normally completes immediately.
         bool gyro_available = false;
