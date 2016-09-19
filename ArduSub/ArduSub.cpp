@@ -217,11 +217,16 @@ void Sub::perf_update(void)
 
 void Sub::loop()
 {
+    /*
+     * loop周期执行的原理不是定时器，而是在2个循环之间加一个等待间隔
+     */
+
     // wait for an INS sample
     ins.wait_for_sample();
 
     uint32_t timer = micros();
 
+    // perf 开头的函数用于性能统计
     // check loop time
     perf_info_check_loop_time(timer - fast_loopTimer);
 
@@ -253,10 +258,12 @@ void Sub::loop()
 void Sub::fast_loop()
 {
 
+    // 姿态控制
     // IMU DCM Algorithm
     // --------------------
     read_AHRS();
 
+    // 只有 MANUAL 模式下，才会关闭姿态控制
     if(control_mode != MANUAL) { //don't run rate controller in manual mode
 		// run low level rate controllers that only require IMU data
 		attitude_control.rate_controller_run();

@@ -1,5 +1,8 @@
 # find the mk/ directory, which is where this makefile fragment
 # lives. (patsubst strips the trailing slash.)
+
+# windows 下值为： CYGWIN_NT-6.1
+# linux   ： Linux
 SYSTYPE			:=	$(shell uname)
 
 ifneq ($(findstring CYGWIN, $(SYSTYPE)),) 
