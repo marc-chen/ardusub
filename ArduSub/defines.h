@@ -97,22 +97,22 @@ enum aux_sw_func {
 
 // Auto Pilot Modes enumeration
 enum control_mode_t {
-    STABILIZE =     0,  // manual airframe angle with manual throttle
-    ACRO =          1,  // manual body-frame angular rate with manual throttle
-    ALT_HOLD =      2,  // manual airframe angle with automatic throttle
-    AUTO =          3,  // fully automatic waypoint control using mission commands
-    GUIDED =        4,  // fully automatic fly to coordinate or fly at velocity/direction using GCS immediate commands
-    LOITER =        5,  // automatic horizontal acceleration with automatic throttle
-    RTL =           6,  // automatic return to launching point
-    CIRCLE =        7,  // automatic circular flight with automatic throttle
-    LAND =          9,  // automatic landing with horizontal position control
+    STABILIZE =     0,  // manual angle with manual depth/throttle
+    ACRO =          1,  // manual body-frame angular rate with manual depth/throttle
+    ALT_HOLD =      2,  // manual angle with automatic depth/throttle
+    AUTO =          3,  // not implemented in sub // fully automatic waypoint control using mission commands
+    GUIDED =        4,  // not implemented in sub // fully automatic fly to coordinate or fly at velocity/direction using GCS immediate commands
+    VELHOLD =       5,  // automatic x/y velocity control and automatic depth/throttle
+    RTL =           6,  // not implemented in sub // automatic return to launching point
+    CIRCLE =        7,  // not implemented in sub // automatic circular flight with automatic throttle
+    SURFACE =       9,  // automatically return to surface, pilot maintains horizontal control
     OF_LOITER =    10,  // deprecated
-    DRIFT =        11,  // semi-automous position, yaw and throttle control
-    SPORT =        13,  // manual earth-frame angular rate control with manual throttle
-    FLIP =         14,  // automatically flip the vehicle on the roll axis
-    AUTOTUNE =     15,  // automatically tune the vehicle's roll and pitch gains
+    DRIFT =        11,  // not implemented in sub // semi-automous position, yaw and throttle control
+    TRANSECT =     13,  // automatic x/y velocity, automatic heading/crosstrack error compensation, automatic depth/throttle
+    FLIP =         14,  // not implemented in sub // automatically flip the vehicle on the roll axis
+    AUTOTUNE =     15,  // not implemented in sub // automatically tune the vehicle's roll and pitch gains
     POSHOLD =      16,  // automatic position hold with manual override, with automatic throttle
-    BRAKE =        17,  // full-brake using inertial/GPS system, no pilot input
+    BRAKE =        17,  // not implemented in sub // full-brake using inertial/GPS system, no pilot input
 	THROW =        18,  // throw to launch mode using inertial/GPS system, no pilot input
 	MANUAL =	   19   // Pass-through input with no stabilization
 };
@@ -131,7 +131,9 @@ enum mode_reason_t {
     MODE_REASON_FENCE_BREACH,
 	MODE_REASON_TERRAIN_FAILSAFE,
 	MODE_REASON_BRAKE_TIMEOUT,
-	MODE_REASON_FLIP_COMPLETE
+	MODE_REASON_FLIP_COMPLETE,
+	MODE_REASON_SURFACE_COMPLETE,
+	MODE_REASON_LEAK_FAILSAFE
 };
 
 // Tuning enumeration
@@ -452,11 +454,30 @@ enum ThrowModeState {
 #define FS_BATT_RTL                         2       // switch to RTL mode on battery failsafe
 
 // GCS failsafe definitions (FS_GCS_ENABLE parameter)
-#define FS_GCS_DISABLED                     0
-#define FS_GCS_ENABLED_ALWAYS_RTL           1
-#define FS_GCS_ENABLED_CONTINUE_MISSION     2
+#define FS_GCS_DISABLED		0 // Disabled
+#define FS_GCS_WARN_ONLY	1 // Only send warning to gcs (only useful with multiple gcs links)
+#define FS_GCS_DISARM		2 // Disarm
+#define FS_GCS_HOLD			3 // Switch depth hold mode or poshold mode if available
+#define FS_GCS_SURFACE		4 // Switch to surface mode
 
-// EKF failsafe definitions (FS_EKF_ACTION parameter)
+// Leak failsafe definitions (FS_LEAK_ENABLE parameter)
+#define FS_LEAK_DISABLED	0 // Disabled
+#define FS_LEAK_WARN_ONLY	1 // Only send waring to gcs
+#define FS_LEAK_SURFACE		2 // Switch to surface mode
+
+// Internal pressure failsafe threshold (FS_PRESS_MAX parameter)
+#define FS_PRESS_MAX_DEFAULT 105000 // Maximum internal pressure in pascal before failsafe is triggered
+// Internal pressure failsafe definitions (FS_PRESS_ENABLE parameter)
+#define FS_PRESS_DISABLED 0
+#define FS_PRESS_WARN_ONLY 1
+
+// Internal temperature failsafe threshold (FS_TEMP_MAX parameter)
+#define FS_TEMP_MAX_DEFAULT 62	// Maximum internal pressure in degrees C before failsafe is triggered
+// Internal temperature failsafe definitions (FS_TEMP_ENABLE parameter)
+#define FS_TEMP_DISABLED 0
+#define FS_TEMP_WARN_ONLY 1
+
+// EKF failsafe definitions (FS_EKF_ENABLE parameter)
 #define FS_EKF_ACTION_LAND                  1       // switch to LAND mode on EKF failsafe
 #define FS_EKF_ACTION_ALTHOLD               2       // switch to ALTHOLD mode on EKF failsafe
 #define FS_EKF_ACTION_LAND_EVEN_STABILIZE   3       // switch to Land mode on EKF failsafe even if in a manual flight mode like stabilize

@@ -398,7 +398,7 @@ void Sub::ten_hz_logging_loop()
     if (should_log(MASK_LOG_RCOUT)) {
         DataFlash.Log_Write_RCOUT();
     }
-    if (should_log(MASK_LOG_NTUN) && (mode_requires_GPS(control_mode) || landing_with_GPS())) {
+    if (should_log(MASK_LOG_NTUN) && mode_requires_GPS(control_mode)) {
         Log_Write_Nav_Tuning();
     }
     if (should_log(MASK_LOG_IMU) || should_log(MASK_LOG_IMU_FAST) || should_log(MASK_LOG_IMU_RAW)) {
@@ -451,6 +451,10 @@ void Sub::dataflash_periodic(void)
 void Sub::three_hz_loop()
 {
 	set_leak_status(water_detector.update());
+
+	failsafe_internal_pressure_check();
+
+	failsafe_internal_temperature_check();
 
     // check if we've lost contact with the ground station
     failsafe_gcs_check();

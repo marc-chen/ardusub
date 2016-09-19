@@ -69,16 +69,16 @@ bool Sub::set_mode(control_mode_t mode, mode_reason_t reason)
             success = circle_init(ignore_checks);
             break;
 
-        case LOITER:
-            success = loiter_init(ignore_checks);
+        case VELHOLD:
+            success = velhold_init(ignore_checks);
             break;
 
         case GUIDED:
             success = guided_init(ignore_checks);
             break;
 
-        case LAND:
-            success = land_init(ignore_checks);
+        case SURFACE:
+            success = surface_init(ignore_checks);
             break;
 
         case RTL:
@@ -89,8 +89,8 @@ bool Sub::set_mode(control_mode_t mode, mode_reason_t reason)
             success = drift_init(ignore_checks);
             break;
 
-        case SPORT:
-            success = sport_init(ignore_checks);
+        case TRANSECT:
+            success = transect_init(ignore_checks);
             break;
 
         case FLIP:
@@ -189,16 +189,16 @@ void Sub::update_flight_mode()
             circle_run();
             break;
 
-        case LOITER:
-            loiter_run();
+        case VELHOLD:
+            velhold_run();
             break;
 
         case GUIDED:
             guided_run();
             break;
 
-        case LAND:
-            land_run();
+        case SURFACE:
+            surface_run();
             break;
 
         case RTL:
@@ -209,8 +209,8 @@ void Sub::update_flight_mode()
             drift_run();
             break;
 
-        case SPORT:
-            sport_run();
+        case TRANSECT:
+            transect_run();
             break;
 
         case FLIP:
@@ -284,13 +284,14 @@ bool Sub::mode_requires_GPS(control_mode_t mode) {
     switch(mode) {
         case AUTO:
         case GUIDED:
-        case LOITER:
+        case VELHOLD:
         case RTL:
         case CIRCLE:
         case DRIFT:
         case POSHOLD:
         case BRAKE:
         case THROW:
+        case TRANSECT:
             return true;
         default:
             return false;
@@ -316,7 +317,7 @@ bool Sub::mode_has_manual_throttle(control_mode_t mode) {
 // mode_allows_arming - returns true if vehicle can be armed in the specified mode
 //  arming_from_gcs should be set to true if the arming request comes from the ground station
 bool Sub::mode_allows_arming(control_mode_t mode, bool arming_from_gcs) {
-	if (mode_has_manual_throttle(mode) || mode == LOITER || mode == ALT_HOLD || mode == POSHOLD || mode == DRIFT || mode == SPORT || mode == THROW || (arming_from_gcs && mode == GUIDED)) {
+	if (mode_has_manual_throttle(mode) || mode == VELHOLD || mode == ALT_HOLD || mode == POSHOLD || mode == DRIFT || mode == TRANSECT || mode == THROW || (arming_from_gcs && mode == GUIDED)) {
         return true;
     }
     return false;
@@ -329,7 +330,7 @@ void Sub::notify_flight_mode(control_mode_t mode) {
         case GUIDED:
         case RTL:
         case CIRCLE:
-        case LAND:
+        case SURFACE:
             // autopilot modes
             AP_Notify::flags.autopilot_mode = true;
             break;
@@ -361,8 +362,8 @@ void Sub::print_flight_mode(AP_HAL::BetterStream *port, uint8_t mode)
     case GUIDED:
         port->print("GUIDED");
         break;
-    case LOITER:
-        port->print("LOITER");
+    case VELHOLD:
+        port->print("VELHOLD");
         break;
     case RTL:
         port->print("RTL");
@@ -370,8 +371,8 @@ void Sub::print_flight_mode(AP_HAL::BetterStream *port, uint8_t mode)
     case CIRCLE:
         port->print("CIRCLE");
         break;
-    case LAND:
-        port->print("LAND");
+    case SURFACE:
+        port->print("SURFACE");
         break;
     case OF_LOITER:
         port->print("OF_LOITER");
@@ -379,8 +380,8 @@ void Sub::print_flight_mode(AP_HAL::BetterStream *port, uint8_t mode)
     case DRIFT:
         port->print("DRIFT");
         break;
-    case SPORT:
-        port->print("SPORT");
+    case TRANSECT:
+        port->print("TRANSECT");
         break;
     case FLIP:
         port->print("FLIP");

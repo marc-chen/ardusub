@@ -270,7 +270,7 @@ void Sub::init_ardupilot()
 		ap.depth_sensor_present = false;
 		for(int i = 1; i < barometer.num_instances(); i++) {
 			barometer.set_type(i, BARO_TYPE_AIR); // Default fcu air baro
-			barometer.set_precision_multiplier(i, 1); // Use default valuse
+			barometer.set_precision_multiplier(i, 1); // Use default values
 		}
 		EKF.set_baro_alt_noise(10.0f); // Readings won't correspond with rest of INS
 		EKF2.set_baro_alt_noise(10.0f);
@@ -283,6 +283,19 @@ void Sub::init_ardupilot()
 	// read Baro pressure at ground
 	//-----------------------------
 	init_barometer(true);
+
+    // cope with MS5607 in place of MS5611 on fake pixhawks
+	if(barometer.get_pressure(0) < 60000) {
+		barometer.set_precision_multiplier(0, 2);
+		init_barometer(true); // recalibrate with correct scalar
+	}
+
+	// backwards compatibility
+	if(attitude_control.get_accel_yaw_max() < 110000.0f) {
+		attitude_control.save_accel_yaw_max(110000.0f);
+	}
+
+	last_pilot_heading = ahrs.yaw_sensor;
 
     // initialise rangefinder
 #if RANGEFINDER_ENABLED == ENABLED

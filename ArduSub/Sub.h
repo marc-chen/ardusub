@@ -295,14 +295,17 @@ private:
 
     // Failsafe
     struct {
-        uint8_t rc_override_active  : 1; // 0   // true if rc control are overwritten by ground station
-        uint8_t radio               : 1; // 1   // A status flag for the radio failsafe
-        uint8_t battery             : 1; // 2   // A status flag for the battery failsafe
-        uint8_t gcs                 : 1; // 4   // A status flag for the ground station failsafe
-        uint8_t ekf                 : 1; // 5   // true if ekf failsafe has occurred
-        uint8_t terrain             : 1; // 6   // true if the missing terrain data failsafe has occurred
-        uint8_t leak				: 1; // true if leak recently detected
+        uint8_t rc_override_active   : 1; // 0   // true if rc control are overwritten by ground station
+        uint8_t radio                : 1; // 1   // A status flag for the radio failsafe
+        uint8_t battery              : 1; // 2   // A status flag for the battery failsafe
+        uint8_t gcs                  : 1; // 4   // A status flag for the ground station failsafe
+        uint8_t ekf                  : 1; // 5   // true if ekf failsafe has occurred
+        uint8_t terrain              : 1; // 6   // true if the missing terrain data failsafe has occurred
+        uint8_t leak				 : 1; // true if leak recently detected
+        uint8_t internal_pressure    : 1; // true if internal pressure is over threshold
+        uint8_t internal_temperature : 1; // true if temperature is over threshold
         uint32_t last_leak_warn_ms;      // last time a leak warning was sent to gcs
+        uint32_t last_gcs_warn_ms;
 
         int8_t radio_counter;            // number of iterations with throttle below throttle_fs_value
 
@@ -561,6 +564,9 @@ private:
     // setup the var_info table
     AP_Param param_loader;
 
+	uint32_t last_pilot_heading;
+	uint32_t last_pilot_yaw_input_ms;
+
 #if GNDEFFECT_COMPENSATION == ENABLED
     // ground effect detector
     struct {
@@ -602,7 +608,6 @@ private:
     void set_simple_mode(uint8_t b);
     void set_failsafe_radio(bool b);
     void set_failsafe_battery(bool b);
-    void set_failsafe_gcs(bool b);
     void set_land_complete(bool b);
     void set_land_complete_maybe(bool b);
     void set_pre_arm_check(bool b);
@@ -790,18 +795,9 @@ private:
     void guided_limit_set(uint32_t timeout_ms, float alt_min_cm, float alt_max_cm, float horiz_max_cm);
     void guided_limit_init_time_and_pos();
     bool guided_limit_check();
-    bool land_init(bool ignore_checks);
-    void land_run();
-    void land_gps_run();
-    void land_nogps_run();
-    void land_run_vertical_control(bool pause_descent = false);
-    void land_run_horizontal_control();
     float get_land_descent_speed();
-    void land_do_not_use_GPS();
-    void set_mode_land_with_pause(mode_reason_t reason);
-    bool landing_with_GPS();
-    bool loiter_init(bool ignore_checks);
-    void loiter_run();
+    bool velhold_init(bool ignore_checks);
+    void velhold_run();
     bool poshold_init(bool ignore_checks);
     void poshold_run();
     void poshold_update_pilot_lean_angle(float &lean_angle_filtered, float &lean_angle_raw);
@@ -834,8 +830,8 @@ private:
     void rtl_land_run();
     void rtl_build_path(bool terrain_following_allowed);
     void rtl_compute_return_alt(const Location_Class &rtl_origin_point, Location_Class &rtl_return_target, bool terrain_following_allowed);
-    bool sport_init(bool ignore_checks);
-    void sport_run();
+    bool transect_init(bool ignore_checks);
+    void transect_run();
     bool stabilize_init(bool ignore_checks);
     void stabilize_run();
     bool manual_init(bool ignore_checks);
@@ -856,7 +852,6 @@ private:
     void failsafe_radio_off_event();
     void failsafe_battery_event(void);
     void failsafe_gcs_check();
-    void failsafe_gcs_off_event(void);
     void failsafe_terrain_check();
     void failsafe_terrain_set_status(bool data_ok);
     void failsafe_terrain_on_event();
@@ -1055,6 +1050,11 @@ private:
     void accel_cal_update(void);
 
     void set_leak_status(bool status);
+    void failsafe_internal_pressure_check();
+    void failsafe_internal_temperature_check();
+
+    bool surface_init(bool ignore_flags);
+    void surface_run();
 
 public:
     void mavlink_delay_cb();

@@ -188,16 +188,52 @@ const AP_Param::Info Sub::var_info[] = {
     // @User: Standard
     GSCALAR(fs_batt_mah,            "FS_BATT_MAH", FS_BATT_MAH_DEFAULT),
 
-    // @Param: FS_GCS_ENABLE
-    // @DisplayName: Ground Station Failsafe Enable
-    // @Description: Controls whether failsafe will be invoked (and what action to take) when connection with Ground station is lost for at least 5 seconds. NB. The GCS Failsafe is only active when RC_OVERRIDE is being used to control the vehicle.
-    // @Values: 0:Disabled,1:Enabled always RTL,2:Enabled Continue with Mission in Auto Mode
-    // @User: Standard
     /*
      * TODO：地面站失去连接之后的处理，禁用也不好，因为电机会一直保持断连之前的状态，可能会一直转
      * 比较保守的方法是关闭马达，这样可以利用自身的浮力上浮即可
      */
+
+    // @Param: FS_GCS_ENABLE
+    // @DisplayName: Ground Station Failsafe Enable
+    // @Description: Controls what action to take when GCS heartbeat is lost.
+    // @Values: 0:Disabled,1:Warn only,2:Disarm,3:Enter depth hold mode,4:Enter surface mode
+    // @User: Standard
     GSCALAR(failsafe_gcs, "FS_GCS_ENABLE", FS_GCS_ENABLED_ALWAYS_RTL),
+
+    // @Param: FS_LEAK_ENABLE
+    // @DisplayName: Leak Failsafe Enable
+    // @Description: Controls what action to take if a leak is detected.
+    // @Values: 0:Disabled,1:Warn only,2:Enter surface mode
+    // @User: Standard
+    GSCALAR(failsafe_leak, "FS_LEAK_ENABLE", FS_LEAK_DISABLED),
+
+    // @Param: FS_PRESS_ENABLE
+    // @DisplayName: Internal Pressure Failsafe Enable
+    // @Description: Controls what action to take if internal pressure exceeds FS_PRESS_MAX parameter.
+    // @Values: 0:Disabled,1:Warn only
+    // @User: Standard
+    GSCALAR(failsafe_pressure, "FS_PRESS_ENABLE", FS_PRESS_DISABLED),
+
+    // @Param: FS_TEMP_ENABLE
+    // @DisplayName: Internal Temperature Failsafe Enable
+    // @Description: Controls what action to take if internal temperature exceeds FS_TEMP_MAX parameter.
+    // @Values: 0:Disabled,1:Warn only
+    // @User: Standard
+    GSCALAR(failsafe_temperature, "FS_TEMP_ENABLE", FS_TEMP_DISABLED),
+
+    // @Param: FS_PRESS_MAX
+    // @DisplayName: Internal Pressure Failsafe Threshold
+    // @Description: The maximum internal pressure allowed before triggering failsafe. Failsafe action is determined by FS_PRESS_ENABLE parameter
+    // @Units: Pascal
+    // @User: Standard
+    GSCALAR(failsafe_pressure_max, "FS_PRESS_MAX", FS_PRESS_MAX_DEFAULT),
+
+    // @Param: FS_TEMP_MAX
+    // @DisplayName: Internal Temperature Failsafe Threshold
+    // @Description: The maximum internal temperature allowed before triggering failsafe. Failsafe action is determined by FS_TEMP_ENABLE parameter.
+    // @Units: Degrees Centigrade
+    // @User: Standard
+    GSCALAR(failsafe_temperature_max, "FS_TEMP_MAX", FS_TEMP_MAX_DEFAULT),
 
     // @Param: GPS_HDOP_GOOD
     // @DisplayName: GPS Hdop Good
@@ -772,6 +808,10 @@ const AP_Param::Info Sub::var_info[] = {
     // @Range: 0.500 2.000
     // @User: Standard
     GGROUP(p_pos_xy,                "POS_XY_", AC_P),
+
+	GGROUP(pid_crosstrack_control, "XTRACK_", AC_PID),
+
+	GGROUP(pid_heading_control, "HEAD_", AC_PID),
 
     // variables not in the g class which contain EEPROM saved variables
 
