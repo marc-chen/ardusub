@@ -188,17 +188,12 @@ const AP_Param::Info Sub::var_info[] = {
     // @User: Standard
     GSCALAR(fs_batt_mah,            "FS_BATT_MAH", FS_BATT_MAH_DEFAULT),
 
-    /*
-     * TODO：地面站失去连接之后的处理，禁用也不好，因为电机会一直保持断连之前的状态，可能会一直转
-     * 比较保守的方法是关闭马达，这样可以利用自身的浮力上浮即可
-     */
-
     // @Param: FS_GCS_ENABLE
     // @DisplayName: Ground Station Failsafe Enable
     // @Description: Controls what action to take when GCS heartbeat is lost.
     // @Values: 0:Disabled,1:Warn only,2:Disarm,3:Enter depth hold mode,4:Enter surface mode
     // @User: Standard
-    GSCALAR(failsafe_gcs, "FS_GCS_ENABLE", FS_GCS_ENABLED_ALWAYS_RTL),
+    GSCALAR(failsafe_gcs, "FS_GCS_ENABLE", FS_GCS_DISARM),
 
     // @Param: FS_LEAK_ENABLE
     // @DisplayName: Leak Failsafe Enable
