@@ -42,6 +42,7 @@ protected:
     void output_armed_stabilizing() override;
 
     // Parameters
+    // 控制马达正转或反转，软件实现，避免换线麻烦
     AP_Int8             _motor_reverse[8];
     AP_Float			_forwardVerticalCouplingFactor;
 

@@ -957,6 +957,7 @@ void GCS_MAVLINK_Sub::handleMessage(mavlink_message_t* msg)
         break;
     }
 
+    // 地面站的模式切换走这里，实际由传入的函数gcs_set_mode来实现
     case MAVLINK_MSG_ID_SET_MODE:       // MAV ID: 11
     {
 #ifdef DISALLOW_GCS_MODE_CHANGE_DURING_RC_FAILSAFE
@@ -967,7 +968,6 @@ void GCS_MAVLINK_Sub::handleMessage(mavlink_message_t* msg)
             mavlink_msg_command_ack_send_buf(msg, chan, MAVLINK_MSG_ID_SET_MODE, MAV_RESULT_FAILED);
         }
 #else
-        // TODO，模式切换
         handle_set_mode(msg, FUNCTOR_BIND(&sub, &Sub::gcs_set_mode, bool, uint8_t));
 #endif
         break;
@@ -1210,9 +1210,6 @@ void GCS_MAVLINK_Sub::handleMessage(mavlink_message_t* msg)
         }
 
 
-        /*
-         * TODO：模式切换
-         */
         case MAV_CMD_NAV_LOITER_UNLIM:
             if (sub.set_mode(LOITER, MODE_REASON_GCS_COMMAND)) {
                 result = MAV_RESULT_ACCEPTED;
@@ -1587,11 +1584,6 @@ void GCS_MAVLINK_Sub::handleMessage(mavlink_message_t* msg)
 
             break;
         }
-
-
-        /*
-         * 这里的模式切换与 SOLO 有关，应该用不到
-         */
 
         /* Solo user presses Fly button */
 		case MAV_CMD_SOLO_BTN_FLY_CLICK: {

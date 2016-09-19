@@ -234,7 +234,7 @@ private:
             uint8_t auto_armed          : 1; // 5       // stops auto missions from beginning until throttle is raised
             uint8_t logging_started     : 1; // 6       // true if dataflash logging has started
 
-            // TODO: sub应该没有land的概念
+            // sub应该没有land的概念
             uint8_t land_complete       : 1; // 7       // true if we have detected a landing
 
             uint8_t new_radio_frame     : 1; // 8       // Set true if we have new PWM data to act on from the Radio
@@ -867,7 +867,10 @@ private:
     void fence_check();
     void fence_send_mavlink_status(mavlink_channel_t chan);
     bool set_mode(control_mode_t mode, mode_reason_t reason);
+
+    // hook it
     bool gcs_set_mode(uint8_t mode);
+
     void update_flight_mode();
     void exit_mode(control_mode_t old_control_mode, control_mode_t new_control_mode);
     bool mode_requires_GPS(control_mode_t mode);
@@ -933,14 +936,11 @@ private:
     void init_rc_in();
     void init_rc_out();
     void enable_motor_output();
-
     void read_radio();
-
     void transform_manual_control_to_rc_override(int16_t x, int16_t y, int16_t z, int16_t r, uint16_t buttons);
     void handle_jsbutton_press(uint8_t button,bool shift=false,bool held=false);
     void camera_tilt_smooth();
     JSButton* get_button(uint8_t index);
-
     void set_throttle_and_failsafe(uint16_t throttle_pwm);
     void set_throttle_zero_flag(int16_t throttle_control);
     void radio_passthrough_to_motors();

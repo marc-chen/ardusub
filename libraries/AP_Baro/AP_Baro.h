@@ -6,9 +6,11 @@
 #include <Filter/Filter.h>
 #include <Filter/DerivativeFilter.h>
 
+// 最多3个深度/高度传感器
 // maximum number of sensor instances
 #define BARO_MAX_INSTANCES 3
 
+// 最多2个驱动，1个驱动可以驱动多个传感器
 // maximum number of drivers. Note that a single driver can provide
 // multiple sensor instances
 #define BARO_MAX_DRIVERS 2

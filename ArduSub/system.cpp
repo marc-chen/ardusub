@@ -110,7 +110,8 @@ void Sub::init_ardupilot()
     //
     // Report firmware version code expect on console (check of actual EEPROM format version is done in load_parameters function)
     //
-    report_version();   // printf
+    // printf
+    report_version();
 
     // load parameters from EEPROM
     load_parameters();

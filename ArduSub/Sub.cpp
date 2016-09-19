@@ -26,13 +26,16 @@ Sub::Sub(void) :
 	DataFlash{FIRMWARE_STRING},
 
     // 默认模式，最终是由宏 FLIGHT_MODE_1 定义，设置为了 MANUAL
-	flight_modes(&g.flight_mode1),
+	 flight_modes(&g.flight_mode1),
 
     mission(ahrs, 
             FUNCTOR_BIND_MEMBER(&Sub::start_command, bool, const AP_Mission::Mission_Command &),
             FUNCTOR_BIND_MEMBER(&Sub::verify_command_callback, bool, const AP_Mission::Mission_Command &),
             FUNCTOR_BIND_MEMBER(&Sub::exit_mission, void)),
-    control_mode(MANUAL),   // 之前的初始值是STABILIZE，但对于水下机器人，默认状态下已经很稳了，完全可以用手工模式
+
+    // 之前的初始值是STABILIZE，但对于水下机器人，默认状态下已经很稳了，完全可以用手工模式
+    control_mode(MANUAL),
+
     motors(MAIN_LOOP_RATE),
     scaleLongDown(1),
     wp_bearing(0),

@@ -952,7 +952,7 @@ GCS_MAVLINK::update(run_cli_fn run_cli)
     mavlink_status_t status;
     status.packet_rx_drop_count = 0;
 
-    // Öğ¸ö×Ö½Ú´¦Àí
+    // é€ä¸ªå­—èŠ‚å¤„ç†
     // process received bytes
     uint16_t nbytes = comm_get_available(chan);
     for (uint16_t i=0; i<nbytes; i++)
@@ -960,9 +960,9 @@ GCS_MAVLINK::update(run_cli_fn run_cli)
         uint8_t c = comm_receive_ch(chan);
 
         /*
-         * run_cli ´«¹ıÀ´µÄÊÇNULL£¬¿ÉÄÜÊÇÒ»ÖÖ»úÖÆ£¬¿ÉÒÔÈÃÓÃ»§´úÂëÏÈÔËĞĞ
-         * µã»÷enter¼ü3´Î£¬¶øÇÒÃ»ÓĞÊÕµ½ĞÄÌø°ü£¿
-         */
+         * run_cli ä¼ è¿‡æ¥çš„æ˜¯NULLï¼Œå¯èƒ½æ˜¯ä¸€ç§æœºåˆ¶ï¼Œå¯ä»¥è®©ç”¨æˆ·ä»£ç å…ˆè¿è¡Œ
+         * ç‚¹å‡»enteré”®3æ¬¡ï¼Œè€Œä¸”æ²¡æœ‰æ”¶åˆ°å¿ƒè·³åŒ…ï¼Ÿ
+        */
         if (run_cli) {
             /* allow CLI to be started by hitting enter 3 times, if no
              *  heartbeat packets have been received */
@@ -979,7 +979,7 @@ GCS_MAVLINK::update(run_cli_fn run_cli)
             }
         }
 
-        // ³¢ÊÔÆ´³ÉÒ»ÌõÍêÕûµÄÏûÏ¢
+        // å°è¯•æ‹¼æˆä¸€æ¡å®Œæ•´çš„æ¶ˆæ¯
         // Try to get a new message
         if (mavlink_parse_char(chan, c, &msg, &status)) {
             // we exclude radio packets to make it possible to use the

@@ -23,8 +23,10 @@ void Sub::arm_motors_check()
 
     int16_t tmp = channel_yaw->get_control_in();
 
-    // full right，四轴上，方向打到最后用于arm，即解锁
-    if (tmp > 4000) {   // TODO: 4000是什么意思？
+    // 四轴上，方向打到最后用于arm，即解锁
+    // TODO: 4000是什么意思？
+    // full right
+    if (tmp > 4000) {
 
         // increase the arming counter to a maximum of 1 beyond the auto trim counter
         if( arming_counter <= AUTO_TRIM_DELAY ) {
@@ -47,7 +49,8 @@ void Sub::arm_motors_check()
             auto_disarm_begin = millis();
         }
 
-    // full left，四轴上，方向打到最左，用于锁定，猜测sub永远不用自动锁定，因为永远不会land
+    // 四轴上，方向打到最左，用于锁定，猜测sub永远不用自动锁定，因为永远不会land
+    // full left
     }else if (tmp < -4000) {
         if (!mode_has_manual_throttle(control_mode) && !ap.land_complete) {
             arming_counter = 0;

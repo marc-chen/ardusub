@@ -54,16 +54,15 @@ void Sub::transform_manual_control_to_rc_override(int16_t x, int16_t y, int16_t 
 	// shift 键按下时，按键的功能会转义，所有每个按键在配置时都可以配置2个功能，一个对应正常，一个对应shift
 	bool shift = false;
 
-	static uint32_t buttonDebounce; // 前一个 tnow_ms
+    // 前一个 tnow_ms
+	static uint32_t buttonDebounce;
 
 	// 每100ms只读一次按键信息
 	// Debouncing timer
 	if ( tnow_ms - buttonDebounce > 100 ) {
 		// Detect if any shift button is pressed
 		for ( uint8_t i = 0 ; i < 16 ; i++ ) {
-			if ( (buttons & (1 << i))
-			        && get_button(i)->function() == JSButton::button_function_t::k_shift )
-			{ shift = true; }
+		    if ( (buttons & (1 << i)) && get_button(i)->function() == JSButton::button_function_t::k_shift ) { shift = true; }
 		}
 
 		// Act if button is pressed
@@ -104,7 +103,7 @@ void Sub::transform_manual_control_to_rc_override(int16_t x, int16_t y, int16_t 
 }
 
 /*
- * 行把按键行为转换成对应的功能设置
+ * 把按键行为转换成对应的功能设置
  */
 void Sub::handle_jsbutton_press(uint8_t button, bool shift
         , bool held // 按键是否长按，如果前一次处理时此按键也按下了，则为 True

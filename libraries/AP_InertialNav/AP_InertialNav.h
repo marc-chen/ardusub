@@ -8,8 +8,8 @@
 #include <AP_NavEKF/AP_Nav_Common.h> // definitions shared by inertial and ekf nav filters
 
 /*
- * �����������λ��+�ٶ�
- * �ӿ��У�һ����update�����ڸ���λ�ú��ٶȣ�������get����
+ * 惯性导航接口
+ * 除了update持续更新位置，其它都是读状态
  */
 /*
  * AP_InertialNav blends accelerometer data with gps and barometer data to improve altitude and position hold.

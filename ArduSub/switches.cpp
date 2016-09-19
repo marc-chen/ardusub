@@ -44,6 +44,7 @@ void Sub::read_control_switch()
     if (control_switch_changed && sufficient_time_elapsed && failsafe_disengaged) {
         // set flight mode and simple mode setting
 
+        // 通过手柄切换模式时，hook STABILIZE，转换成MANUAL
         control_mode_t mode = (control_mode_t)flight_modes[switch_position].get();
         if (mode == STABILIZE) {
             mode = MANUAL;

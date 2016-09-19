@@ -32,15 +32,15 @@ extern const AP_HAL::HAL& hal;
 MAVLink_routing::MAVLink_routing(void) : num_routes(0) {}
 
 /*
- * TODO: MAVLinkµ÷¶ÈÀíÂÛ!!!ÖµµÃÑ§Ï°
+ * TODO: MAVLinkè°ƒåº¦ç†è®º!!!å€¼å¾—å­¦ä¹ 
  *
- * ±¾µØ´¦Àí£º·É¿Ø»á´¦ÀíÂú×ãÏÂÁĞÈÎÒ»Ìõ¼şµÄÏûÏ¢£º
- *   target_systemÎª¿Õ
- *   target_systemÎª0
- *   target_systemÂú×ã£¬Ã»ÓĞtarget_component×Ö¶Î£¬»òÕßÊôÓÚ×Ô¼º
- *   target_systemÂú×ã£¬target_component²»ÊôÓÚ×Ô¼º£¬µ« ¡£¡£¡£,see 1e)
+ * æœ¬åœ°å¤„ç†ï¼šé£æ§ä¼šå¤„ç†æ»¡è¶³ä¸‹åˆ—ä»»ä¸€æ¡ä»¶çš„æ¶ˆæ¯ï¼š
+ *   target_systemä¸ºç©º
+ *   target_systemä¸º0
+ *   target_systemæ»¡è¶³ï¼Œæ²¡æœ‰target_componentå­—æ®µï¼Œæˆ–è€…å±äºè‡ªå·±
+ *   target_systemæ»¡è¶³ï¼Œtarget_componentä¸å±äºè‡ªå·±ï¼Œä½† ã€‚ã€‚ã€‚,see 1e)
  *
- * ×ª·¢£º¡£¡£¡£
+ * è½¬å‘ï¼šã€‚ã€‚ã€‚
  */
 
 /*

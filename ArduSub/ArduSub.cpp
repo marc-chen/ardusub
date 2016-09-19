@@ -90,7 +90,10 @@ const AP_Scheduler::Task Sub::scheduler_tasks[] = {
     SCHED_TASK(update_optical_flow,  200,    160),
 #endif
     SCHED_TASK(update_batt_compass,   10,    120),
-    SCHED_TASK(read_aux_switches,     10,     50),  // cha 7~12
+
+    // cha 7~12
+    SCHED_TASK(read_aux_switches,     10,     50),
+
     SCHED_TASK(arm_motors_check,      10,     50),
     SCHED_TASK(auto_disarm_check,     10,     50),
     SCHED_TASK(auto_trim,             10,     75),
@@ -114,15 +117,23 @@ const AP_Scheduler::Task Sub::scheduler_tasks[] = {
     SCHED_TASK(gcs_send_heartbeat,     1,    110),
     SCHED_TASK(gcs_send_deferred,     50,    550),
     SCHED_TASK(gcs_data_stream_send,  50,    550),
-    SCHED_TASK(update_mount,          50,     75),  // camera
+
+    // camera
+    SCHED_TASK(update_mount,          50,     75),
 	SCHED_TASK(camera_tilt_smooth,    50,     50),
-	SCHED_TASK(update_trigger,        50,     75),  // camera
+	SCHED_TASK(update_trigger,        50,     75),
+
     SCHED_TASK(ten_hz_logging_loop,   10,    350),
     SCHED_TASK(twentyfive_hz_logging, 25,    110),
     SCHED_TASK(dataflash_periodic,    400,    300),
     SCHED_TASK(perf_update,           0.1,    75),
-    SCHED_TASK(read_receiver_rssi,    10,     75),  // RSSI, abbr. 接收信号强度指示器（Received Signal Strength Indicator）
-    SCHED_TASK(rpm_update,            10,    200),  // 转速？
+
+    // RSSI, abbr. 接收信号强度指示器（Received Signal Strength Indicator）
+    SCHED_TASK(read_receiver_rssi,    10,     75),
+
+    // 转速？
+    SCHED_TASK(rpm_update,            10,    200),
+
     SCHED_TASK(compass_cal_update,   100,    100),
     SCHED_TASK(accel_cal_update,      10,    100),
 #if FRSKY_TELEM_ENABLED == ENABLED

@@ -2,9 +2,6 @@
 
 #include <GCS_MAVLink/GCS.h>
 
-/*
- * sub 自己的MAVLink消息处理
- */
 class GCS_MAVLINK_Sub : public GCS_MAVLINK
 {
 
