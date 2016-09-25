@@ -33,6 +33,7 @@ void Vector3<T>::rotate(enum Rotation rotation)
     case ROTATION_NONE:
     case ROTATION_MAX:
         return;
+    // 逆时针绕原点(0,0)旋转45度，比如(1,1)旋转之后变成(0,1.414)
     case ROTATION_YAW_45: {
         tmp = HALF_SQRT_2*(float)(x - y);
         y   = HALF_SQRT_2*(float)(x + y);

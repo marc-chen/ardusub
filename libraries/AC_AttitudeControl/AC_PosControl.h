@@ -12,6 +12,7 @@
 #include <AP_Motors/AP_Motors.h>          // motors library
 #include <AP_Vehicle/AP_Vehicle.h>         // common vehicle parameters
 
+// ? 没用 GPS ?
 
 // position controller default definitions
 #define POSCONTROL_ACCELERATION_MIN             50.0f   // minimum horizontal acceleration in cm/s/s - used for sanity checking acceleration in leash length calculation
@@ -20,6 +21,7 @@
 #define POSCONTROL_STOPPING_DIST_Z_MAX          200.0f  // max stopping distance vertically   
                                                         // should be 1.5 times larger than POSCONTROL_ACCELERATION.
                                                         // max acceleration = max lean angle * 980 * pi / 180.  i.e. 23deg * 980 * 3.141 / 180 = 393 cm/s/s
+// 从宏定义上看，这里的单位应该是 cm/s/s/s，而 不是 m/s/s/s
 #define POSCONTROL_JERK_LIMIT_CMSSS             1700.0f // default jerk limit on horizontal acceleration (unit: m/s/s/s)
 
 #define POSCONTROL_SPEED                        500.0f  // default horizontal speed in cm/s
@@ -57,7 +59,7 @@ public:
     enum xy_mode {
         XY_MODE_POS_ONLY = 0,           // position correction only (i.e. no velocity feed-forward)
         XY_MODE_POS_LIMITED_AND_VEL_FF, // for loiter - rate-limiting the position correction, velocity feed-forward
-        XY_MODE_POS_AND_VEL_FF          // for velocity controller - unlimied position correction, velocity feed-forward
+        XY_MODE_POS_AND_VEL_FF          // for velocity controller - unlimited position correction, velocity feed-forward
     };
 
     ///

@@ -45,10 +45,23 @@ void Sub::read_control_switch()
         // set flight mode and simple mode setting
 
         // 通过手柄切换模式时，hook STABILIZE，转换成MANUAL
+        /*
         control_mode_t mode = (control_mode_t)flight_modes[switch_position].get();
         if (mode == STABILIZE) {
             mode = MANUAL;
             gcs_send_text_fmt(MAV_SEVERITY_INFO, "switch STABILIZE to MANUAL");
+        }
+        */
+        uint8_t mode = flight_modes[switch_position].get();
+        control_mode_t mode2 = (control_mode_t)mode;
+        if (0 == mode) {     mode2 = MANUAL;    }
+        else if (2  == mode) { mode2 = ALT_HOLD; }
+        else if (3  == mode) { mode2 = VELHOLD; }
+        else if (4  == mode) { mode2 = TRANSECT; }
+        else if (10 == mode) { mode2 = POSHOLD; }
+        else if (11 == mode) { mode2 = SURFACE; }
+        if (mode2 != (control_mode_t)mode) {
+            gcs_send_text_fmt(MAV_SEVERITY_INFO, "joystick convert mode from %d to %d", mode, mode2);
         }
 
     	if (set_mode(mode, MODE_REASON_TX_COMMAND)) {

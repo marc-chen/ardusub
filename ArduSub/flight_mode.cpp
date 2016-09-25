@@ -14,9 +14,14 @@ bool Sub::gcs_set_mode(uint8_t mode)
 
 #ifdef MARC_CONVERT_MODE_STABILIZE_TO_MANUAL
     control_mode_t mode2 = (control_mode_t)mode;
-    if (mode2 == STABILIZE) {
-        mode2 = MANUAL;
-        gcs_send_text_fmt(MAV_SEVERITY_INFO, "convert STABILIZE to MANUAL");
+    if (0 == mode) {     mode2 = MANUAL;    }
+    else if (2  == mode) { mode2 = ALT_HOLD; }
+    else if (3  == mode) { mode2 = VELHOLD; }
+    else if (4  == mode) { mode2 = TRANSECT; }
+    else if (10 == mode) { mode2 = POSHOLD; }
+    else if (11 == mode) { mode2 = SURFACE; }
+    if (mode2 != (control_mode_t)mode) {
+        gcs_send_text_fmt(MAV_SEVERITY_INFO, "GCS convert mode from %d to %d", mode, mode2);
     }
     return set_mode(mode2, MODE_REASON_GCS_COMMAND);
 #else

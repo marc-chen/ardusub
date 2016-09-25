@@ -68,17 +68,23 @@ const AP_Param::GroupInfo AP_Baro::var_info[] = {
     // @Increment: 0.1
     AP_GROUPINFO("ALT_OFFSET", 5, AP_Baro, _alt_offset, 0),
 
+    // 虽然这里是0，但系统初始化时如果发现传感器数量>1，会设置为1
     // @Param: PRIMARY
     // @DisplayName: Primary barometer
     // @Description: This selects which barometer will be the primary if multiple barometers are found
     // @Values: 0:FirstBaro,1:2ndBaro,2:3rdBaro
     AP_GROUPINFO("PRIMARY", 6, AP_Baro, _primary_baro, 0),
 
+    // 设置水密度，海水 or 淡水
     // @Param: SPEC_GRAV
     // @DisplayName: Specific Gravity (For water depth measurement)
     // @Description: This sets the specific gravity of the fluid when flying an underwater ROV. Set to 1.0 for freshwater or 1.024 for saltwater
     // @Values: 1.0:Fresh Water, 1.024:Salt Water
     AP_GROUPINFO("SPEC_GRAV", 7, AP_Baro, _specific_gravity, 1.0),
+
+    /*
+     * 校准相关的两个参数：BASE_PRESS, BASE_RESET
+     */
 
     // @Param: BASE_PRESS
     // @DisplayName: Base Pressure (For water depth measurement)
@@ -108,6 +114,7 @@ AP_Baro::AP_Baro()
     AP_Param::setup_object_defaults(this, var_info);
 }
 
+// 这里有校准，在启动时调用的
 // calibrate the barometer. This must be called at least once before
 // the altitude() or climb_rate() interfaces can be used
 void AP_Baro::calibrate()

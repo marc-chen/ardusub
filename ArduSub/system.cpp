@@ -255,6 +255,7 @@ void Sub::init_ardupilot()
     	ap.depth_sensor_present = true;
 		for(int i = 1; i < barometer.num_instances(); i++) {
 			barometer.set_type(i, BARO_TYPE_WATER); // Altitude (depth) is calculated differently underwater
+			// TODO:文档都说是10，这里的参数却是40，BUG？
 			barometer.set_precision_multiplier(i, 40); // The MS58XX values reported need to be multiplied by 10 to match units everywhere else
 		}
 
