@@ -26,10 +26,11 @@ void Sub::update_surface_and_bottom_detector()
 	bool vel_stationary = velocity.z > -0.05 && velocity.z < 0.05;
 
 	if (ap.depth_sensor_present) { // we can use the external pressure sensor for a very accurate and current measure of our z axis position
-		current_depth = barometer.get_altitude(); // cm
+		current_depth = barometer.get_altitude(); // m
 
 
 		if(ap.at_surface) {
+		    // 已经在水面时，深度可以再放宽一些，避免抖动。可以再放宽一些 :)
 			set_surfaced(current_depth > g.surface_depth/100.0 - 0.05); // add a 5cm buffer so it doesn't trigger too often
 		} else {
 			set_surfaced(current_depth > g.surface_depth/100.0); // If we are above surface depth, we are surfaced

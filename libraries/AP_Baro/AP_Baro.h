@@ -62,6 +62,7 @@ public:
     // be used for incremental preflight update of baro
     void update_calibration(void);
 
+    // 相对上一次校准的深度，单位：m
     // get current altitude in meters relative to altitude at the time
     // of the last calibrate() call
     float get_altitude(void) const { return get_altitude(_primary); }

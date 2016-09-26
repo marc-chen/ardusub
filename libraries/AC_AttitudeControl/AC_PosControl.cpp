@@ -125,6 +125,7 @@ void AC_PosControl::set_speed_z(float speed_down, float speed_up)
 /// set_accel_z - set vertical acceleration in cm/s/s
 void AC_PosControl::set_accel_z(float accel_cmss)
 {
+    // 绝对值差距 >1 才更新，why ?
     if (fabsf(_accel_z_cms-accel_cmss) > 1.0f) {
         _accel_z_cms = accel_cmss;
         _flags.recalc_leash_z = true;

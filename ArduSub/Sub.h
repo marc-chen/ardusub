@@ -176,6 +176,7 @@ private:
     Compass compass;
     AP_InertialSensor ins;
 
+    // 测距仪，估计是光流超声波之类的东西，应该没有启用
     RangeFinder rangefinder {serial_manager};
     struct {
         bool enabled:1;

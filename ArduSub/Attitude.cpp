@@ -24,6 +24,7 @@ void Sub::get_pilot_desired_lean_angles(float roll_in, float pitch_in, float &ro
     roll_in *= scaler;
     pitch_in *= scaler;
 
+    // 对pitch,roll求平方再开根，如果越界再按比例缩小
     // do circular limit
     float total_in = norm(pitch_in, roll_in);
     if (total_in > angle_max) {

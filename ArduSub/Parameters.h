@@ -559,6 +559,7 @@ public:
     AP_Float                autotune_aggressiveness;
     AP_Float                autotune_min_d;
 
+    // 水面深度，单位:cm
     AP_Float				surface_depth;
 
     // Note: keep initializers here in the same order as they are declared

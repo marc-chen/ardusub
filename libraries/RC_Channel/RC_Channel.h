@@ -157,10 +157,14 @@ public:
     
 private:
 
+    // 原始 pwm 值，记录之后，马上转换成 _control_in
     // pwm is stored here
     int16_t     _radio_in;
+
+    // 根据输入的pwm，转化之后的数据，范围是 [_low_in, _high_in]，内部控制都用它
     // value generated from PWM
     int16_t     _control_in;
+
     // current values to the servos - degrees * 100 (approx assuming servo is -45 to 45 degrees except [3] is 0 to 100
     int16_t     _servo_out;
     // PWM is without the offset from radio_min
@@ -171,11 +175,15 @@ private:
     AP_Int16    _radio_trim;
     AP_Int16    _radio_max;
 
+    // 让万达反转，省去改接线的麻烦
     AP_Int8     _reverse;
+
     AP_Int16    _dead_zone;
+
     uint8_t     _type_in;
     int16_t     _high_in;
     int16_t     _low_in;
+
     uint8_t     _type_out;
     int16_t     _high_out;
     int16_t     _low_out;
