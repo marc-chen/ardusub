@@ -30,6 +30,11 @@ const AP_Param::GroupInfo AC_AttitudeControl::var_info[] = {
     // @User: Advanced
     AP_GROUPINFO("ACCEL_Y_MAX",  4, AC_AttitudeControl, _accel_yaw_max, AC_ATTITUDE_CONTROL_ACCEL_Y_MAX_DEFAULT_CDSS),
 
+    /*
+     * 前馈控制(开环)。以热水器为例，水量大就大火，水量小就小火，不管出口温度，这就是前馈。测量水温变化，根据测量值来调节火力大小，就是反馈控制，也叫闭环，PID就是
+     * 默认开启
+     */
+
     // @Param: RATE_FF_ENAB
     // @DisplayName: Rate Feedforward Enable
     // @Description: Controls whether body-frame rate feedfoward is enabled or disabled
@@ -125,6 +130,31 @@ void AC_AttitudeControl::relax_attitude_controllers()
     get_rate_pitch_pid().reset_I();
     get_rate_yaw_pid().reset_I();
 }
+
+/*
+ *
+ * desired: 用户输入的，期望去的地方
+ * target : 通过jerk,加速和limit，move至 desired
+ * measured: 测量结结果，反馈控制用，
+ *
+ *
+ * 先 angle controller，再 rate controllers
+ *
+ * target angular velocities  ----------------------------------------------------- fed ---> _ rate controllers
+ *                                                                                         +/
+ *  ____________ angular error ____________  --- fed --->  angle controller  --- output --->
+ * / measured attitude  -  target attitude \
+ *
+ *
+ * angular velocity: 角速度
+ *
+ * 基本过程：
+ * 1. 用输入参数，来定义 desired 姿态
+ * 2. 用输入参数和 desired 姿态，来定义 target 角速度，这样可以让 target 姿态 move 至 desired 姿态
+ * 3. -
+ * 4.
+ * 5.
+ */
 
 // The attitude controller works around the concept of the desired attitude, target attitude
 // and measured attitude. The desired attitude is the attitude input into the attitude controller

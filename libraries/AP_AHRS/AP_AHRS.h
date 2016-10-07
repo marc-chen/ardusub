@@ -19,6 +19,8 @@
 /*
  *  AHRS (Attitude Heading Reference System) interface for ArduPilot
  *
+ *  姿态和航向指示
+ *
  */
 
 #include <AP_Math/AP_Math.h>

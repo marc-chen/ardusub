@@ -14,6 +14,7 @@ const AP_Param::GroupInfo AC_P::var_info[] = {
     AP_GROUPEND
 };
 
+// P是比例控制器，_kp就是那个比例值
 float AC_P::get_p(float error) const
 {
     return (float)error * _kp;

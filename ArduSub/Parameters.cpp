@@ -20,12 +20,14 @@
 /*
  *  ArduCopter parameter definitions
  *
+ *  Group的效果，相当于在变量下设置二级变量，这样通过笛卡尔级可以衍生出很多配置
+ *
  */
 
-#define GSCALAR(v, name, def) { sub.g.v.vtype, name, Parameters::k_param_ ## v, &sub.g.v, {def_value : def} }
+#define GSCALAR(v, name, def) { sub.g.v.vtype,     name, Parameters::k_param_ ## v, &sub.g.v, {def_value : def} }
 #define ASCALAR(v, name, def) { sub.aparm.v.vtype, name, Parameters::k_param_ ## v, (const void *)&sub.aparm.v, {def_value : def} }
-#define GGROUP(v, name, class) { AP_PARAM_GROUP, name, Parameters::k_param_ ## v, &sub.g.v, {group_info : class::var_info} }
-#define GOBJECT(v, name, class) { AP_PARAM_GROUP, name, Parameters::k_param_ ## v, (const void *)&sub.v, {group_info : class::var_info} }
+#define GGROUP(v, name, class) { AP_PARAM_GROUP,   name, Parameters::k_param_ ## v, &sub.g.v, {group_info : class::var_info} }
+#define GOBJECT(v, name, class) { AP_PARAM_GROUP,  name, Parameters::k_param_ ## v, (const void *)&sub.v, {group_info : class::var_info} }
 #define GOBJECTN(v, pname, name, class) { AP_PARAM_GROUP, name, Parameters::k_param_ ## pname, (const void *)&sub.v, {group_info : class::var_info} }
 
 const AP_Param::Info Sub::var_info[] = {
@@ -35,6 +37,7 @@ const AP_Param::Info Sub::var_info[] = {
 	// @Description: The depth the external pressure sensor will read when the vehicle is considered at the surface (in centimeters)
 	// @Range: -100 0
     // @User: Standard
+    // 水面深度，达到此值表示到达水面了。单位cm，负数表示深度，默认-10表示水下10cm
 	GSCALAR(surface_depth, "SURFACE_DEPTH", SURFACE_DEPTH_DEFAULT),
 
     // @Param: SYSID_SW_MREV
@@ -50,6 +53,7 @@ const AP_Param::Info Sub::var_info[] = {
     // @Values: 0:ArduPlane,4:AntennaTracker,10:Copter,20:Rover
     // @User: Advanced
 	// @ReadOnly: True
+    // 地面站标识软件类型，10，TODO：目标地面站的下拉选项好像总是不对，可能跟这个有关
     GSCALAR(software_type,  "SYSID_SW_TYPE",   Parameters::k_software_type),
 
     // @Param: SYSID_THISMAV
@@ -91,6 +95,7 @@ const AP_Param::Info Sub::var_info[] = {
     // @Units: Centimeters
     // @Range: 0.0 1000.0
     // @Increment: 10
+    // 起飞高度，这里设置为0，因为是sub
     GSCALAR(pilot_takeoff_alt,  "PILOT_TKOFF_ALT",  PILOT_TKOFF_ALT_DEFAULT),
 
     // @Param: PILOT_TKOFF_DZ
@@ -249,6 +254,7 @@ const AP_Param::Info Sub::var_info[] = {
     // @Description: Bitmask to enable Super Simple mode for some flight modes. Setting this to Disabled(0) will disable Super Simple Mode
     // @Values: 0:Disabled,1:Mode1,2:Mode2,3:Mode1+2,4:Mode3,5:Mode1+3,6:Mode2+3,7:Mode1+2+3,8:Mode4,9:Mode1+4,10:Mode2+4,11:Mode1+2+4,12:Mode3+4,13:Mode1+3+4,14:Mode2+3+4,15:Mode1+2+3+4,16:Mode5,17:Mode1+5,18:Mode2+5,19:Mode1+2+5,20:Mode3+5,21:Mode1+3+5,22:Mode2+3+5,23:Mode1+2+3+5,24:Mode4+5,25:Mode1+4+5,26:Mode2+4+5,27:Mode1+2+4+5,28:Mode3+4+5,29:Mode1+3+4+5,30:Mode2+3+4+5,31:Mode1+2+3+4+5,32:Mode6,33:Mode1+6,34:Mode2+6,35:Mode1+2+6,36:Mode3+6,37:Mode1+3+6,38:Mode2+3+6,39:Mode1+2+3+6,40:Mode4+6,41:Mode1+4+6,42:Mode2+4+6,43:Mode1+2+4+6,44:Mode3+4+6,45:Mode1+3+4+6,46:Mode2+3+4+6,47:Mode1+2+3+4+6,48:Mode5+6,49:Mode1+5+6,50:Mode2+5+6,51:Mode1+2+5+6,52:Mode3+5+6,53:Mode1+3+5+6,54:Mode2+3+5+6,55:Mode1+2+3+5+6,56:Mode4+5+6,57:Mode1+4+5+6,58:Mode2+4+5+6,59:Mode1+2+4+5+6,60:Mode3+4+5+6,61:Mode1+3+4+5+6,62:Mode2+3+4+5+6,63:Mode1+2+3+4+5+6
     // @User: Standard
+    // 超级简单模式，方向永远是相对起点，而不是飞机本身。需要GPS，sub下基本没用
     GSCALAR(super_simple,   "SUPER_SIMPLE",     0),
 
     // @Param: RTL_ALT_FINAL
@@ -258,6 +264,7 @@ const AP_Param::Info Sub::var_info[] = {
     // @Range: -1 1000
     // @Increment: 1
     // @User: Standard
+    // RTL相关的配置，sub都不需要
     GSCALAR(rtl_alt_final,  "RTL_ALT_FINAL", RTL_ALT_FINAL),
 
     // @Param: RTL_CLIMB_MIN
@@ -274,6 +281,7 @@ const AP_Param::Info Sub::var_info[] = {
     // @Description: Determines how the autopilot controls the yaw during missions and RTL
     // @Values: 0:Never change yaw, 1:Face next waypoint, 2:Face next waypoint except RTL, 3:Face along GPS course
     // @User: Standard
+    // mission时方向如何控制
     GSCALAR(wp_yaw_behavior,  "WP_YAW_BEHAVIOR",    WP_YAW_BEHAVIOR_DEFAULT),
 
     // @Param: RTL_LOIT_TIME
@@ -292,6 +300,7 @@ const AP_Param::Info Sub::var_info[] = {
     // @Range: 30 200
     // @Increment: 10
     // @User: Standard
+    // 降落最后阶段的速度，sub不需要
     GSCALAR(land_speed,             "LAND_SPEED",   LAND_SPEED),
 
     // @Param: LAND_SPEED_HIGH
@@ -326,6 +335,7 @@ const AP_Param::Info Sub::var_info[] = {
     // @Description: The throttle failsafe allows you to configure a software failsafe activated by a setting on the throttle input channel
     // @Values: 0:Disabled,1:Enabled always RTL,2:Enabled Continue with Mission in Auto Mode,3:Enabled always LAND
     // @User: Standard
+    // 适用于飞机使用遥控器时，sub不需要，因为都是通过地面站控制的
     GSCALAR(failsafe_throttle,  "FS_THR_ENABLE",   FS_THR_DISABLED),
 
     // @Param: FS_THR_VALUE
@@ -344,6 +354,7 @@ const AP_Param::Info Sub::var_info[] = {
     // @Range: 0 300
     // @Units: pwm
     // @Increment: 1
+    // 中点上下浮动区间，这个区间内都算中间，定高模式时高度不变。否则很难精准知道中间位置
     GSCALAR(throttle_deadzone,  "THR_DZ",    THR_DZ_DEFAULT),
 
     // @Param: FLTMODE1
@@ -351,6 +362,7 @@ const AP_Param::Info Sub::var_info[] = {
     // @Description: Flight mode when Channel 5 pwm is <= 1230
 	// @Values: 0:Stabilize,2:DepthHold,19:Manual
     // @User: Standard
+    // 默认模式，总共6个
     GSCALAR(flight_mode1, "FLTMODE1",               FLIGHT_MODE_1),
 
     // @Param: FLTMODE2
@@ -392,6 +404,7 @@ const AP_Param::Info Sub::var_info[] = {
     // @DisplayName: Simple mode bitmask
     // @Description: Bitmask which holds which flight modes use simple heading mode (eg bit 0 = 1 means Flight Mode 0 uses simple mode)
     // @User: Advanced
+    // 3电机不需要，vector可以考虑
     GSCALAR(simple_modes, "SIMPLE",                 0),
 
     // @Param: LOG_BITMASK
@@ -442,6 +455,7 @@ const AP_Param::Info Sub::var_info[] = {
     // @Description: Select which function if performed when CH7 is above 1800 pwm
 	// @Values: 0:Do Nothing, 2:Flip, 3:Simple Mode, 4:RTL, 5:Save Trim, 7:Save WP, 9:Camera Trigger, 10:RangeFinder, 11:Fence, 12:ResetToArmedYaw, 13:Super Simple Mode, 14:Acro Trainer, 16:Auto, 17:AutoTune, 18:Land, 19:EPM, 21:Parachute Enable, 22:Parachute Release, 23:Parachute 3pos, 24:Auto Mission Reset, 25:AttCon Feed Forward, 26:AttCon Accel Limits, 27:Retract Mount, 28:Relay On/Off, 34:Relay2 On/Off, 35:Relay3 On/Off, 36:Relay4 On/Off, 29:Landing Gear, 30:Lost Copter Sound, 31:Motor Emergency Stop, 32:Motor Interlock, 33:Brake, 37:Throw
     // @User: Standard
+    // 这里提供了额外的操作，仅当pwm超过1800时
     GSCALAR(ch7_option, "CH7_OPT",                  AUXSW_DO_NOTHING),
 
     // @Param: CH8_OPT
@@ -485,7 +499,7 @@ const AP_Param::Info Sub::var_info[] = {
     // @Values: 0:Disabled, 1:Enabled, -3:Skip Baro, -5:Skip Compass, -9:Skip GPS, -17:Skip INS, -33:Skip Params/Rangefinder, -65:Skip RC, 127:Skip Voltage
     // @Bitmask: 0:All,1:Baro,2:Compass,3:GPS,4:INS,5:Parameters+Rangefinder,6:RC,7:Voltage
     // @User: Standard
-    // TODO：sub需要禁用，否则无法成功 arm？建议测试一下
+    // TODO：sub需要禁用，否则无法成功 arm？建议测试一下，好像这样就可以
     GSCALAR(arming_check, "ARMING_CHECK",           -66),
 
     // @Param: DISARM_DELAY
@@ -511,6 +525,7 @@ const AP_Param::Info Sub::var_info[] = {
     // @Increment: 10
     // @User: Standard
     // @Values: 0:Very Soft, 25:Soft, 50:Medium, 75:Crisp, 100:Very Crisp
+    // 姿态控制时的油门感觉，<软---硬>
     GSCALAR(rc_feel_rp, "RC_FEEL_RP",  RC_FEEL_RP_MEDIUM),
 
 #if POSHOLD_ENABLED == ENABLED
@@ -520,6 +535,7 @@ const AP_Param::Info Sub::var_info[] = {
     // @Units: deg/sec
     // @Range: 4 12
     // @User: Advanced
+    // 定点模式下的刹车角度，仅4轴需要
     GSCALAR(poshold_brake_rate, "PHLD_BRAKE_RATE",  POSHOLD_BRAKE_RATE_DEFAULT),
 
     // @Param: PHLD_BRAKE_ANGLE
@@ -536,6 +552,7 @@ const AP_Param::Info Sub::var_info[] = {
     // @Description: Enables user input during LAND mode, the landing phase of RTL, and auto mode landings.
     // @Values: 0:No repositioning, 1:Repositioning
     // @User: Advanced
+    // 四轴，默认降落时也可以调整前后左右位置
     GSCALAR(land_repositioning, "LAND_REPOSITION",     LAND_REPOSITION_DEFAULT),
 
     // @Param: FS_EKF_ACTION
@@ -543,6 +560,7 @@ const AP_Param::Info Sub::var_info[] = {
     // @Description: Controls the action that will be taken when an EKF failsafe is invoked
     // @Values: 1:Land, 2:AltHold, 3:Land even in Stabilize
     // @User: Advanced
+    // EKF也有失败的时候？默认LAND
     GSCALAR(fs_ekf_action, "FS_EKF_ACTION",    FS_EKF_ACTION_DEFAULT),
 
     // @Param: FS_EKF_THRESH
@@ -557,6 +575,7 @@ const AP_Param::Info Sub::var_info[] = {
     // @Description: This enables automatic crash checking. When enabled the motors will disarm if a crash is detected.
     // @Values: 0:Disabled, 1:Enabled
     // @User: Advanced
+    // 四轴
     GSCALAR(fs_crash_check, "FS_CRASH_CHECK",    0),
 
     // RC channel
@@ -680,6 +699,7 @@ const AP_Param::Info Sub::var_info[] = {
     // @Range: 50 490
     // @Increment: 1
     // @User: Advanced
+	// 电调更新频率，默认最大值490
     GSCALAR(rc_speed, "RC_SPEED",              RC_FAST_SPEED),
 
     // @Param: ACRO_RP_P
@@ -687,6 +707,7 @@ const AP_Param::Info Sub::var_info[] = {
     // @Description: Converts pilot roll and pitch into a desired rate of rotation in ACRO and SPORT mode.  Higher values mean faster rate of rotation.
     // @Range: 1 10
     // @User: Standard
+    // 物技模式相关参数 acro_*
     GSCALAR(acro_rp_p,                 "ACRO_RP_P",           ACRO_RP_P),
 
     // @Param: ACRO_YAW_P
@@ -818,30 +839,37 @@ const AP_Param::Info Sub::var_info[] = {
 
     // @Group: RELAY_
     // @Path: ../libraries/AP_Relay/AP_Relay.cpp
+    // 继电器保护？好像可以用于trigger the camera
     GOBJECT(relay,                  "RELAY_", AP_Relay),
 
 #if EPM_ENABLED == ENABLED
 	// @Group: EPM_
     // @Path: ../libraries/AP_EPM/AP_EPM.cpp
+    // 电永磁铁（Electro Permanent Magnet-EPM），可用于货物的抓放
+    // http://diydrones.com/profiles/blogs/epm-cargo-gripper-simple-easy-method-for-gripping-and-relasing
     GOBJECT(epm,            "EPM_", AP_EPM),
 #endif
 
 #if PARACHUTE == ENABLED
 	// @Group: CHUTE_
     // @Path: ../libraries/AP_Parachute/AP_Parachute.cpp
+    // 降落伞
     GOBJECT(parachute,		"CHUTE_", AP_Parachute),
 #endif
 
     // @Group: LGR_
     // @Path: ../libraries/AP_LandingGear/AP_LandingGear.cpp
+    //  起落架
     GOBJECT(landinggear,    "LGR_", AP_LandingGear),
 
     // @Group: COMPASS_
     // @Path: ../libraries/AP_Compass/AP_Compass.cpp
+    // 罗盘，有外接罗盘时使用外接罗盘
     GOBJECT(compass,        "COMPASS_", Compass),
 
     // @Group: INS_
     // @Path: ../libraries/AP_InertialSensor/AP_InertialSensor.cpp
+    // 惯性传感器，即陀螺仪
     GOBJECT(ins,            "INS_", AP_InertialSensor),
 
     // @Group: WPNAV_
@@ -854,6 +882,7 @@ const AP_Param::Info Sub::var_info[] = {
 
     // @Group: ATC_
 	// @Path: ../libraries/AC_AttitudeControl/AC_AttitudeControl.cpp,../libraries/AC_AttitudeControl/AC_AttitudeControl_Multi.cpp
+    // 姿态控制
     GOBJECT(attitude_control, "ATC_", AC_AttitudeControl_Multi),
 
     // @Group: POSCON_
@@ -920,10 +949,12 @@ const AP_Param::Info Sub::var_info[] = {
     // Water driver
     // @Group: WD_
     // @Path: ../libraries/AP_WaterDetector/AP_WaterDetector.cpp
+    // 漏水检测
 	GOBJECT(water_detector, "WD_", AP_WaterDetector),
 
     // @Group: SCHED_
     // @Path: ../libraries/AP_Scheduler/AP_Scheduler.cpp
+	// 调度器，默认50HZ
     GOBJECT(scheduler, "SCHED_", AP_Scheduler),
 
 #if AC_FENCE == ENABLED
@@ -939,6 +970,7 @@ const AP_Param::Info Sub::var_info[] = {
 #if AC_RALLY == ENABLED
     // @Group: RALLY_
     // @Path: ../libraries/AP_Rally/AP_Rally.cpp
+    // 围栏，限制飞行范围？
     GOBJECT(rally,      "RALLY_",   AP_Rally),
 #endif
 
@@ -955,6 +987,7 @@ const AP_Param::Info Sub::var_info[] = {
 
     // @Group: RCMAP_
     // @Path: ../libraries/AP_RCMapper/AP_RCMapper.cpp
+	// 通道编号配置，遥控器如果不能改，可以在这里改
     GOBJECT(rcmap, "RCMAP_",        RCMapper),
 
     // @Group: EKF_
@@ -971,17 +1004,20 @@ const AP_Param::Info Sub::var_info[] = {
 
     // @Group: RSSI_
     // @Path: ../libraries/AP_RSSI/AP_RSSI.cpp
+    // RSSI:接收信号强度指示器（Received Signal Strength Indicator）
     GOBJECT(rssi, "RSSI_",  AP_RSSI),      
     
 #if RANGEFINDER_ENABLED == ENABLED
     // @Group: RNGFND
     // @Path: ../libraries/AP_RangeFinder/RangeFinder.cpp
+    // 测距仪
     GOBJECT(rangefinder,   "RNGFND", RangeFinder),
 #endif
 
 #if AP_TERRAIN_AVAILABLE && AC_TERRAIN
     // @Group: TERRAIN_
     // @Path: ../libraries/AP_Terrain/AP_Terrain.cpp
+    // terrain [地理] 地形，地势；领域；地带
     GOBJECT(terrain,                "TERRAIN_", AP_Terrain),
 #endif
 
@@ -994,11 +1030,13 @@ const AP_Param::Info Sub::var_info[] = {
 #if PRECISION_LANDING == ENABLED
     // @Group: PLND_
     // @Path: ../libraries/AC_PrecLand/AC_PrecLand.cpp
+    // precision landing
     GOBJECT(precland, "PLND_", AC_PrecLand),
 #endif
 
     // @Group: RPM
     // @Path: ../libraries/AP_RPM/AP_RPM.cpp
+    // 转速
     GOBJECT(rpm_sensor, "RPM", AP_RPM),
 
     // @Group: ADSB_
@@ -1029,6 +1067,7 @@ const AP_Param::Info Sub::var_info[] = {
 
 	// @Group: NTF_
 	// @Path: ../libraries/AP_Notify/AP_Notify.cpp
+    // 通知，灯光、喇叭
 	GOBJECT(notify, "NTF_",  AP_Notify),
 
 	// @Param: THROW_MOT_START

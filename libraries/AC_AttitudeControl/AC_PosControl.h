@@ -97,10 +97,10 @@ public:
     void set_speed_z(float speed_down, float speed_up);
 
     /// get_speed_up - accessor for current up speed in cm/s
-    float get_speed_up() const { return _speed_up_cms; }
+    float get_speed_up() const { return _speed_max_up_cms; }
 
     /// get_speed_down - accessors for current down speed in cm/s.  Will be a negative number
-    float get_speed_down() const { return _speed_down_cms; }
+    float get_speed_down() const { return _speed_max_down_cms; }
 
     /// get_vel_target_z - returns current vertical speed in cm/s
     float get_vel_target_z() const { return _vel_target.z; }
@@ -110,7 +110,7 @@ public:
     void set_accel_z(float accel_cmss);
 
     /// get_accel_z - returns current vertical acceleration in cm/s/s
-    float get_accel_z() const { return _accel_z_cms; }
+    float get_accel_z() const { return _accel_max_z_cms; }
 
     /// calc_leash_length - calculates the vertical leash lengths from maximum speed, acceleration
     ///     called by pos_to_rate_z if z-axis speed or accelerations are changed
@@ -197,7 +197,7 @@ public:
     /// set_speed_xy - set horizontal speed maximum in cm/s
     ///     leash length will be recalculated the next time update_xy_controller() is called
     void set_speed_xy(float speed_cms);
-    float get_speed_xy() const { return _speed_cms; }
+    float get_speed_xy() const { return _speed_max_hor_cms; }
 
     /// set_jerk_xy - set max horizontal jerk in cm/s/s/s
     void set_jerk_xy(float jerk_cmsss) { _jerk_cmsss = jerk_cmsss; }
@@ -385,10 +385,13 @@ private:
     float       _dt_xy;                 // time difference (in seconds) between update_xy_controller and update_vel_controller_xyz calls
     uint32_t    _last_update_xy_ms;     // system time of last update_xy_controller call
     uint32_t    _last_update_z_ms;      // system time of last update_z_controller call
-    float       _speed_down_cms;        // max descent rate in cm/s
-    float       _speed_up_cms;          // max climb rate in cm/s
-    float       _speed_cms;             // max horizontal speed in cm/s
-    float       _accel_z_cms;           // max vertical acceleration in cm/s/s
+
+    // 用户可以通过参数配置的值，命名真应该加上 max
+    float       _speed_max_down_cms;        // max descent rate in cm/s
+    float       _speed_max_up_cms;          // max climb rate in cm/s
+    float       _speed_max_hor_cms;         // max horizontal speed in cm/s
+    float       _accel_max_z_cms;           // max vertical acceleration in cm/s/s
+
     float       _accel_last_z_cms;      // max vertical acceleration in cm/s/s
     float       _accel_cms;             // max horizontal acceleration in cm/s/s
     float       _jerk_cmsss;            // max horizontal jerk in cm/s/s/s

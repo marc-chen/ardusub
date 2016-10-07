@@ -12,6 +12,8 @@ const AP_Param::GroupInfo AC_PI_2D::var_info[] = {
     // @Description: P Gain which produces an output value that is proportional to the current error value
     AP_GROUPINFO("P",    0, AC_PI_2D, _kp, 0),
 
+    // 下面3个参数都I控制器，P控制器只有一个参数
+
     // @Param: I
     // @DisplayName: PID Integral Gain
     // @Description: I Gain which produces an output that is proportional to both the magnitude and the duration of the error
@@ -93,9 +95,15 @@ Vector2f AC_PI_2D::get_p() const
     return (_input * _kp);
 }
 
+/*
+ * get_i 和 get_i_shrink 都只在AC_PosControl::rate_to_accel_xy中有调用
+ * 油门或加速度没到最大时，调用get_i，否则调用后者，平滑一下
+ */
+
 Vector2f AC_PI_2D::get_i()
 {
     if(!is_zero(_ki) && !is_zero(_dt)) {
+        // 积分，累加
         _integrator += (_input * _ki) * _dt;
         float integrator_length = _integrator.length();
         if ((integrator_length > _imax) && (integrator_length > 0)) {

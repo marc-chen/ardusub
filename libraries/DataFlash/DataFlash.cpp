@@ -23,6 +23,7 @@ const AP_Param::GroupInfo DataFlash_Class::var_info[] = {
     // @Description: If LOG_DISARMED is set to 1 then logging will be enabled while disarmed. This can make for very large logfiles but can help a lot when tracking down startup issues
     // @Values: 0:Disabled,1:Enabled
     // @User: Standard
+    // arm前也开户日志，可以方便定位启动故障，默认不开启
     AP_GROUPINFO("_DISARMED",  2, DataFlash_Class, _params.log_disarmed,       0),
 
     // @Param: _REPLAY

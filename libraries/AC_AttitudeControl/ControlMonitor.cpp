@@ -12,6 +12,7 @@
 
 /*
   update a RMS estimate of controller state
+  RMS: 均方根（值）（Root-Mean-Square）
  */
 void AC_AttitudeControl::control_monitor_filter_pid(float value, float &rms)
 {

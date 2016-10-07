@@ -4,6 +4,11 @@
 
 #include <AP_HAL/AP_HAL.h>
 
+/*
+ * 漏水检测，原理可能是接一个传感器，传感器检测到漏水到输送信号，飞控直接读pin信号，有信号就是漏水
+ * 可以使用3个ADC接口或者6个aux中的任何一个
+ */
+
 const AP_Param::GroupInfo AP_WaterDetector::var_info[] = {
 
 	// @Param: PIN

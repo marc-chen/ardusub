@@ -157,11 +157,17 @@ public:
     
 private:
 
-    // 原始 pwm 值，记录之后，马上转换成 _control_in
+    // 1. 原始pwm(脉宽)值，范围是[_radio_min, _radio_trim, _radio_max]，一般为[1100,1500,1900]
     // pwm is stored here
     int16_t     _radio_in;
 
-    // 根据输入的pwm，转化之后的数据，范围是 [_low_in, _high_in]，内部控制都用它
+    /*
+     * 2. pwm转化而来，成正比，方便计算。与类型_type_in相关，范围(range)或角度(angle)：
+     *   只有油门是范围，在[_low_in, _high_in]，默认是[0.1000]
+     *   其它通道都是角度，最大值为_high_in，默认4500，表示45度*100，以保证必要的精度
+     *   有意思的是sub中，前进、后退也保留了使用角度来定义，可能是继承自多轴的原因
+     */
+    // ，内部控制都用它
     // value generated from PWM
     int16_t     _control_in;
 
@@ -178,6 +184,7 @@ private:
     // 让万达反转，省去改接线的麻烦
     AP_Int8     _reverse;
 
+    // pwm取值一般是1000~2000，可能在1000上面一点再定义一个死区，参考pwm_to_range_dz的实现
     AP_Int16    _dead_zone;
 
     uint8_t     _type_in;

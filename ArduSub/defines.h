@@ -295,6 +295,8 @@ enum ThrowModeState {
 #define LOG_PRECLAND_MSG                0x21
 #define LOG_GUIDEDTARGET_MSG 			0x22
 
+// 姿态有2种频率的日志，FAST是20HZ，MED是10HZ
+// 默认 MED
 #define MASK_LOG_ATTITUDE_FAST          (1<<0)
 #define MASK_LOG_ATTITUDE_MED           (1<<1)
 #define MASK_LOG_GPS                    (1<<2)
@@ -307,13 +309,19 @@ enum ThrowModeState {
 #define MASK_LOG_CURRENT                (1<<9)
 #define MASK_LOG_RCOUT                  (1<<10)
 #define MASK_LOG_OPTFLOW                (1<<11)
+
+// 默认未开
 #define MASK_LOG_PID                    (1<<12)
+
 #define MASK_LOG_COMPASS                (1<<13)
 #define MASK_LOG_INAV                   (1<<14) // deprecated
 #define MASK_LOG_CAMERA                 (1<<15)
 #define MASK_LOG_MOTBATT                (1UL<<17)
+
+// 默认未开
 #define MASK_LOG_IMU_FAST               (1UL<<18)
 #define MASK_LOG_IMU_RAW                (1UL<<19)
+
 #define MASK_LOG_ANY                    0xFFFF
 
 // DATA - event logging

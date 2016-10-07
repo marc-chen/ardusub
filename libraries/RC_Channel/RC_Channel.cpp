@@ -369,9 +369,11 @@ RC_Channel::pwm_to_range_dz(uint16_t dead_zone)
 	    r_in = _radio_max.get() - (r_in - _radio_min.get());
     }
 
+    // dead_zone
     int16_t radio_trim_low  = _radio_min + dead_zone;
 
     if (r_in > radio_trim_low)
+        // 等比例映射至[_low_in, _high_in]范围
         return (_low_in + ((int32_t)(_high_in - _low_in) * (int32_t)(r_in - radio_trim_low)) / (int32_t)(_radio_max - radio_trim_low));
     else if (dead_zone > 0)
         return 0;

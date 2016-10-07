@@ -19,6 +19,7 @@
 #include <AP_HAL/AP_HAL.h>
 extern const AP_HAL::HAL& hal;
 
+// 看起来挺依赖gps和罗盘的，可惜这两个都不适用于sub
 // table of user settable parameters
 const AP_Param::GroupInfo AP_AHRS::var_info[] = {
     // index 0 and 1 are for old parameters that are no longer not used

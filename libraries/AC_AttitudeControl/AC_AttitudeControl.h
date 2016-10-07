@@ -184,6 +184,10 @@ public:
     // Return angular velocity in radians used in the angular velocity controller
     Vector3f rate_bf_targets() const { return _rate_target_ang_vel; }
 
+    /*
+     * 前馈控制，默认开启
+     * Sub中，只发现 Sub::do_aux_switch_function 中通过指令 AUXSW_ATTCON_FEEDFWD 来开关此功能
+     */
     // Enable or disable body-frame feed forward
     void bf_feedforward(bool enable_or_disable) { _rate_bf_ff_enabled = enable_or_disable; }
 
@@ -292,6 +296,7 @@ protected:
     // Enable/Disable body frame rate feed forward
     AP_Int8             _rate_bf_ff_enabled;
 
+    // ???
     // Enable/Disable angle boost
     AP_Int8             _angle_boost_enabled;
 
@@ -300,11 +305,14 @@ protected:
     AC_P                _p_angle_pitch;
     AC_P                _p_angle_yaw;
 
+    // ???
     // Angle limit time constant (to maintain altitude)
     AP_Float            _angle_limit_tc;
 
     // Intersampling period in seconds
     float               _dt;
+
+    // 下面两个参数，一个欧拉角，一个欧拉角速度
 
     // This represents a 321-intrinsic rotation from NED frame to the target (setpoint)
     // attitude used in the attitude controller, in radians.
@@ -315,9 +323,13 @@ protected:
     // second.
     Vector3f            _attitude_target_euler_rate;
 
+    // Quaternion是四元组，等同于矩阵  _attitude_target_euler_angle
+
     // This represents a quaternion rotation from NED frame to the target (setpoint)
     // attitude used in the attitude controller.
     Quaternion          _attitude_target_quat;
+
+    // 下面两个变量命名不如上面的工整，猜不出什么作用
 
     // This represents the angular velocity of the target (setpoint) attitude used in
     // the attitude controller as an angular velocity vector, in radians per second in
@@ -334,9 +346,20 @@ protected:
     // throttle provided as input to attitude controller.  This does not include angle boost.
     float               _throttle_in = 0.0f;
 
+    // 此变量的确没什么用
     // This represents the throttle increase applied for tilt compensation.
     // Used only for logging.
     float               _angle_boost;
+
+    /*
+     * Input Shaping，用于降低振动，快速达到静止状态
+     * see http://code.eng.buffalo.edu/tdf/papers/acc_tut.pdf
+     *     http://www.convolve.com/input_shaping.php
+     *
+     * 之前搜索到 Loop Shaping，其实是另外的一个技术，没有研究
+     *
+     * 默认开启，代码搜索后发现所有地方都是开启（只在Copter中发现有手工开启）
+     */
 
     // Specifies whether the attitude controller should use the input shaping and feedforward
     bool                _use_ff_and_input_shaping;

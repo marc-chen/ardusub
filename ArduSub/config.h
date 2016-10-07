@@ -358,6 +358,8 @@
 //////////////////////////////////////////////////////////////////////////////
 // CAMERA TRIGGER AND CONTROL
 //
+// 有云台，这里可以关闭了
+# define CAMERA         DISABLED
 #ifndef CAMERA
  # define CAMERA        ENABLED
 #endif
@@ -570,6 +572,9 @@
 #ifndef LOGGING_ENABLED
  # define LOGGING_ENABLED                ENABLED
 #endif
+
+// 日志全开
+#define DEFAULT_LOG_BITMASK     MASK_LOG_ANY
 
 // Default logging bitmask
 #ifndef DEFAULT_LOG_BITMASK

@@ -22,21 +22,28 @@ void Sub::update_surface_and_bottom_detector()
 	Vector3f velocity;
 	ahrs.get_velocity_NED(velocity);
 
+	/*
+	 * 用速度来判断是否在z轴方向稳定
+	 * 看来定深的最大速度必须超过5cm/s，否则容易引起误判
+	 */
 	// check that we are not moving up or down
 	bool vel_stationary = velocity.z > -0.05 && velocity.z < 0.05;
 
+	// 有深度传感器时，直接读深度来判断是否在水面
 	if (ap.depth_sensor_present) { // we can use the external pressure sensor for a very accurate and current measure of our z axis position
 		current_depth = barometer.get_altitude(); // m
 
 
 		if(ap.at_surface) {
-		    // 已经在水面时，深度可以再放宽一些，避免抖动。可以再放宽一些 :)
+		    // 已经在水面时，阈值放宽5cm，避免抖动
 			set_surfaced(current_depth > g.surface_depth/100.0 - 0.05); // add a 5cm buffer so it doesn't trigger too often
 		} else {
+		    // 小于阈值（10cm）即认为是水面了
 			set_surfaced(current_depth > g.surface_depth/100.0); // If we are above surface depth, we are surfaced
 		}
 
 
+		// 传感器对于底部判断，没有帮助
 		if(motors.limit.throttle_lower && vel_stationary) {
 			// bottom criteria met - increment the counter and check if we've triggered
 			if( bottom_detector_count < ((float)BOTTOM_DETECTOR_TRIGGER_SEC)*MAIN_LOOP_RATE) {
@@ -51,6 +58,15 @@ void Sub::update_surface_and_bottom_detector()
 
 	// with no external baro, the only thing we have to go by is a vertical velocity estimate
 	} else if (vel_stationary) {
+
+	    // 没有深度传感器，只能根据相对状态来判断，有可能误判
+
+	    /*
+	     * 在水面的判定条件：
+	     *   上下速度不超过5cm/s
+	     *   油门向上最大
+	     *   这种状态累计超过1秒（BUG？改为持续1秒是不是更合理）
+	     */
 		if(motors.limit.throttle_upper) {
 
 			// surface criteria met, increment counter and see if we've triggered
