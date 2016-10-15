@@ -885,10 +885,10 @@ void Sub::do_roi(const AP_Mission::Mission_Command& cmd)
     set_auto_yaw_roi(cmd.content.location);
 }
 
+#if CAMERA == ENABLED
 // do_digicam_configure Send Digicam Configure message with the camera library
 void Sub::do_digicam_configure(const AP_Mission::Mission_Command& cmd)
 {
-#if CAMERA == ENABLED
     camera.configure(cmd.content.digicam_configure.shooting_mode,
                      cmd.content.digicam_configure.shutter_speed,
                      cmd.content.digicam_configure.aperture,
@@ -896,13 +896,13 @@ void Sub::do_digicam_configure(const AP_Mission::Mission_Command& cmd)
                      cmd.content.digicam_configure.exposure_type,
                      cmd.content.digicam_configure.cmd_id,
                      cmd.content.digicam_configure.engine_cutoff_time);
-#endif
 }
+#endif
 
+#if CAMERA == ENABLED
 // do_digicam_control Send Digicam Control message with the camera library
 void Sub::do_digicam_control(const AP_Mission::Mission_Command& cmd)
 {
-#if CAMERA == ENABLED
     if (camera.control(cmd.content.digicam_control.session,
                    cmd.content.digicam_control.zoom_pos,
                    cmd.content.digicam_control.zoom_step,
@@ -911,8 +911,8 @@ void Sub::do_digicam_control(const AP_Mission::Mission_Command& cmd)
                    cmd.content.digicam_control.cmd_id)) {
     	log_picture();
     }
-#endif
 }
+#endif
 
 // do_take_picture - take a picture with the camera library
 void Sub::do_take_picture()
