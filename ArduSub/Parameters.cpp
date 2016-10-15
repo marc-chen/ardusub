@@ -22,6 +22,7 @@
  *
  *  Group的效果，相当于在变量下设置二级变量，这样通过笛卡尔级可以衍生出很多配置
  *
+ * 只有在这里定义的变量，才能通过地面站查看、修改参数。不是所有的对象中的var_info都能被看到并修改
  */
 
 #define GSCALAR(v, name, def) { sub.g.v.vtype,     name, Parameters::k_param_ ## v, &sub.g.v, {def_value : def} }
@@ -982,7 +983,7 @@ const AP_Param::Info Sub::var_info[] = {
 //#else
 //    // @Group: MOT_
 //    // @Path: ../libraries/AP_Motors/AP_MotorsMulticopter.cpp
-//    GOBJECT(motors, "MOT_",         AP_MotorsMulticopter),
+    GOBJECT(motors, "MOT_",         AP_MotorsMulticopter),
 //#endif
 
     // @Group: RCMAP_
