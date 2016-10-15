@@ -13,6 +13,10 @@
 #include "CompassCalibrator.h"
 #include "AP_Compass_Backend.h"
 
+/*
+ * 罗盘传感器，输出为3个轴向的旋转角度
+ */
+
 // compass product id
 #define AP_COMPASS_TYPE_UNKNOWN         0x00
 #define AP_COMPASS_TYPE_HIL             0x01
@@ -373,6 +377,7 @@ private:
         // eeprom values to be compared as consistency check
         AP_Int32    dev_id;
 
+        // gps 也可以用于水平方向的定向，这里配置用哪个
         AP_Int8     use_for_yaw;
 
         uint8_t     mag_history_index;

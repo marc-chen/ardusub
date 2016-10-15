@@ -24,6 +24,8 @@ extern const AP_HAL::HAL& hal;
 const AP_Param::GroupInfo AP_AHRS::var_info[] = {
     // index 0 and 1 are for old parameters that are no longer not used
 
+    // TODO: 对于水下设备，gps信号弱，应该可以减少很多
+
     // @Param: GPS_GAIN
     // @DisplayName: AHRS GPS gain
     // @Description: This controls how how much to use the GPS to correct the attitude. This should never be set to zero for a plane as it would result in the plane losing control in turns. For a plane please use the default value of 1.0.
@@ -37,6 +39,8 @@ const AP_Param::GroupInfo AP_AHRS::var_info[] = {
     // @Values: 0:Disabled,1:Enabled
     // @User: Advanced
     AP_GROUPINFO("GPS_USE",  3, AP_AHRS, _gps_use, 1),
+
+    // TODO: YAW_P 值要降低，sub下GPS无信号，compass也很弱，但有水面时也有帮助，让看起来的效果还不错
 
     // @Param: YAW_P
     // @DisplayName: Yaw P
@@ -232,6 +236,7 @@ Vector2f AP_AHRS::groundspeed_vector(void)
 void AP_AHRS::update_trig(void)
 {
     Vector2f yaw_vector;
+    // ned: 大地坐标系
     const Matrix3f &temp = get_rotation_body_to_ned();
 
     // sin_yaw, cos_yaw

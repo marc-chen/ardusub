@@ -34,6 +34,17 @@ class AuxiliaryBus;
  */
 class DataFlash_Class;
 
+/*
+ * 陀螺仪，最多支持3组，包括加速度计，也称 IMU
+ * 一般不会直接访问这里（一般通过 ahrs），只有在  arm 前的检测时才会直接访问陀螺仪
+ *
+ * 输出是3个加速度值和3个轴的旋转加速度，以及校准后的偏移量 offset
+ *
+ * 包括校准接口，校准的常用缩写是 cal, acal,
+ *
+ * SI units: 国际标准单位（等于standard international unit）
+ */
+
 /* AP_InertialSensor is an abstraction for gyro and accel measurements
  * which are correctly aligned to the body axes and scaled to SI units.
  *
@@ -82,6 +93,7 @@ public:
     ///
     void init_gyro(void);
 
+
     /// Fetch the current gyro values
     ///
     /// @returns	vector of rotational rates in radians/sec
@@ -106,6 +118,7 @@ public:
 
     float get_delta_velocity_dt(uint8_t i) const;
     float get_delta_velocity_dt() const { return get_delta_velocity_dt(_primary_accel); }
+
 
     /// Fetch the current accelerometer values
     ///
@@ -138,6 +151,7 @@ public:
     const Vector3f &get_accel_offsets(uint8_t i) const { return _accel_offset[i]; }
     const Vector3f &get_accel_offsets(void) const { return get_accel_offsets(_primary_accel); }
 
+    // scale保存的是 gain（放大倍数）
     // get accel scale
     const Vector3f &get_accel_scale(uint8_t i) const { return _accel_scale[i]; }
     const Vector3f &get_accel_scale(void) const { return get_accel_scale(_primary_accel); }
@@ -151,6 +165,10 @@ public:
      */
     float get_delta_time() const { return _delta_time; }
 
+    /*
+     * 陀螺仪的飘移量，误差，固定值，随不同芯片而不同
+     * 如果直接用 gyro 的值而不用修正，1分钟下来的角度误差是30度，基本不可用了
+     */
     // return the maximum gyro drift rate in radians/s/s. This
     // depends on what gyro chips are being used
     float get_gyro_drift_rate(void) const { return ToRad(0.5f/60); }
@@ -181,12 +199,13 @@ public:
     uint8_t get_primary_accel(void) const { return _primary_accel; }
     uint8_t get_primary_gyro(void) const { return _primary_gyro; }
 
+    // ?? 什么是 hil mode ？好像sub下没有用
     // enable HIL mode
     void set_hil_mode(void) { _hil_mode = true; }
 
+    // 这两个函数没有任何调用
     // get the gyro filter rate in Hz
     uint8_t get_gyro_filter_hz(void) const { return _gyro_filter_cutoff; }
-
     // get the accel filter rate in Hz
     uint8_t get_accel_filter_hz(void) const { return _accel_filter_cutoff; }
 
@@ -196,9 +215,11 @@ public:
     // enable/disable raw gyro/accel logging
     void set_raw_logging(bool enable) { _log_raw_data = enable; }
 
+    // 备用 IMU 才会调用它
     // calculate vibration levels and check for accelerometer clipping (called by a backends)
     void calc_vibration_and_clipping(uint8_t instance, const Vector3f &accel, float dt);
 
+    // EKF 会用到
     // retrieve latest calculated vibration levels
     Vector3f get_vibration_levels() const { return get_vibration_levels(_primary_accel); }
     Vector3f get_vibration_levels(uint8_t instance) const;
@@ -417,7 +438,7 @@ private:
     void _acal_event_failure();
 
     // Returns AccelCalibrator objects pointer for specified acceleromter
-    AccelCalibrator* _acal_get_calibrator(uint8_t i) { return i<get_accel_count()?&(_accel_calibrator[i]):NULL; }
+    AccelCalibrator* _acal_get_calibrator(uint8_t i) { return i < get_accel_count() ? &(_accel_calibrator[i]) : NULL; }
 
     float _trim_pitch;
     float _trim_roll;

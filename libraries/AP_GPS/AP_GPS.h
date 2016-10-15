@@ -25,6 +25,14 @@
 #include "GPS_detect_state.h"
 #include <AP_SerialManager/AP_SerialManager.h>
 
+/*
+ * gps 传感器
+ * 输出：
+ *  高度、经度、纬度
+ *  地面速率（0000.0~1851.8公里/小时
+ *  地面航向（000.0~359.9度，以真北或磁北为参考基准）
+ */
+
 /**
    maximum number of GPS instances available on this platform. If more
    than 1 then redundent sensors may be available

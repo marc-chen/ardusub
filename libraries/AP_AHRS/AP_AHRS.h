@@ -17,10 +17,31 @@
  */
 
 /*
- *  AHRS (Attitude Heading Reference System) interface for ArduPilot
+ * AHRS (Attitude Heading Reference System) interface for ArduPilot
  *
- *  姿态和航向指示
+ * 输出（9轴）：
+ *   3个加速度
+ *   3个角加速度
+ *   3个方向
  *
+ * 使用陀螺仪来获取短时间的变化量，用compass, gps来修正最终值
+ *
+ * 简单的 IMUs (Inertial Measurement Units)，精度依赖高可靠的陀螺仪
+ *
+ * AHRS整合陀螺仪、重力、地磁、加速度计信息，而且加上滤波，测量更精准，而且解决了陀螺仪的drift(漂移)问题
+ * see https://www.xsens.com/tags/ahrs/
+ *
+ * AHRS在3个轴上都有gyroscopes, accelerometers and magnetometers
+ * 与IMU的区别是AHRS会处理数据，而IMU只是传感器。另外AHRS可以做为惯性导航的一部分
+ * 一般会用到 EKF (Extended Kalman filter) 来处理
+ * AHRS可以用于玻璃座舱上的信息展示，类似QGroundControl右侧的姿态展示
+ * https://en.wikipedia.org/wiki/Attitude_and_heading_reference_system
+ *
+ *
+ * AHRS是相对于地球的，重力与地磁越正交，效果越好，所以在南北极是无法工作的，DJI说明书也是这么说的
+ * AHRS的传感器通常是成本低廉的mems，误差很大，需要配置GPS、地磁等来校准
+ * IMU传感器可以做到高精度，但成本也很高。而且姿态是相对于宇宙的
+ * see http://www.cnblogs.com/yxy8023ustc/archive/2012/11/22/2782200.html
  */
 
 #include <AP_Math/AP_Math.h>
@@ -208,6 +229,7 @@ public:
     // return a smoothed and corrected gyro vector
     virtual const Vector3f &get_gyro(void) const = 0;
 
+    // 不像 IMU 的 drift 值是固定值，这里是变化的，与算法有关
     // return the current estimate of the gyro drift
     virtual const Vector3f &get_gyro_drift(void) const = 0;
 
