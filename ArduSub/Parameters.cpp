@@ -236,6 +236,20 @@ const AP_Param::Info Sub::var_info[] = {
     // @User: Standard
     GSCALAR(failsafe_temperature_max, "FS_TEMP_MAX", FS_TEMP_MAX_DEFAULT),
 
+    // @Param: FS_TERRAIN_ENAB
+    // @DisplayName: Terrain Failsafe Enable
+    // @Description: Controls what action to take if terrain information is lost during AUTO mode
+    // @Values: 0:Disarm, 1:Hold Position, 2:Surface
+    // @User: Standard
+    GSCALAR(failsafe_terrain, "FS_TERRAIN_ENAB", FS_TERRAIN_DISARM),
+
+    // @Param: XTRACK_ANG_LIM
+    // @DisplayName: Crosstrack correction angle limit
+    // @Description: Maximum allowed angle (in degrees) between current track and desired heading during waypoint navigation
+    // @Range: 10 90
+    // @User: Standard
+	GSCALAR(xtrack_angle_limit,"XTRACK_ANG_LIM", 45),
+
     // @Param: GPS_HDOP_GOOD
     // @DisplayName: GPS Hdop Good
     // @Description: GPS Hdop value at or below this value represent a good position.  Used for pre-arm checks
@@ -826,9 +840,11 @@ const AP_Param::Info Sub::var_info[] = {
     // @User: Standard
     GGROUP(p_pos_xy,                "POS_XY_", AC_P),
 
+#if TRANSECT_ENABLED == ENABLED
 	GGROUP(pid_crosstrack_control, "XTRACK_", AC_PID),
 
 	GGROUP(pid_heading_control, "HEAD_", AC_PID),
+#endif
 
     // variables not in the g class which contain EEPROM saved variables
 
@@ -947,11 +963,12 @@ const AP_Param::Info Sub::var_info[] = {
     // @Path: ../libraries/AP_GPS/AP_GPS.cpp
     GOBJECT(gps, "GPS_", AP_GPS),
 
-    // Water driver
-    // @Group: WD_
-    // @Path: ../libraries/AP_WaterDetector/AP_WaterDetector.cpp
     // 漏水检测
-	GOBJECT(water_detector, "WD_", AP_WaterDetector),
+
+    // Leak detector
+    // @Group: LEAK
+    // @Path: ../libraries/AP_LeakDetector/AP_LeakDetector.cpp
+	GOBJECT(leak_detector, "LEAK", AP_LeakDetector),
 
     // @Group: SCHED_
     // @Path: ../libraries/AP_Scheduler/AP_Scheduler.cpp

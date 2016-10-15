@@ -279,7 +279,7 @@ void Sub::init_ardupilot()
 
 	}
 
-    water_detector.init();
+    leak_detector.init();
 
 	// read Baro pressure at ground
 	//-----------------------------

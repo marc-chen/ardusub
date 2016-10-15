@@ -1404,17 +1404,37 @@ void GCS_MAVLINK_Sub::handleMessage(mavlink_message_t* msg)
         case MAV_CMD_PREFLIGHT_SET_SENSOR_OFFSETS:
         	{
                 uint8_t compassNumber = -1;
-                if (is_equal(packet.param1, 2.0f)) {
+                if (is_equal(packet.param1, 2.0f)) { // compass1
                     compassNumber = 0;
-                } else if (is_equal(packet.param1, 5.0f)) {
+                } else if (is_equal(packet.param1, 5.0f)) { // compass 2
                     compassNumber = 1;
-                } else if (is_equal(packet.param1, 6.0f)) {
+                } else if (is_equal(packet.param1, 6.0f)) { // compass 3
                     compassNumber = 2;
                 }
+
                 if (compassNumber != (uint8_t) -1) {
                     sub.compass.set_and_save_offsets(compassNumber, packet.param2, packet.param3, packet.param4);
                     result = MAV_RESULT_ACCEPTED;
+                    break;
                 }
+
+                if (is_equal(packet.param1, 3.0f)) { // depth sensor, set zero depth
+                	if(is_zero(packet.param2) &&
+                		is_zero(packet.param3) &&
+						is_zero(packet.param4) &&
+						is_zero(packet.param5) &&
+						is_zero(packet.param6) &&
+						is_zero(packet.param7))
+                	{
+                		if(!sub.ap.depth_sensor_present || sub.motors.armed() || sub.barometer.get_pressure() > 110000) {
+                			result = MAV_RESULT_FAILED;
+                			break;
+                		}
+                		sub.barometer.update_calibration();
+                		result = MAV_RESULT_ACCEPTED;
+                	}
+                }
+
                 break;
             }
 
@@ -2041,7 +2061,7 @@ void GCS_MAVLINK_Sub::handleMessage(mavlink_message_t* msg)
     	mavlink_sys_status_t packet;
     	mavlink_msg_sys_status_decode(msg, &packet);
     	if((packet.onboard_control_sensors_enabled & MAV_SENSOR_WATER) && !(packet.onboard_control_sensors_health & MAV_SENSOR_WATER))
-    		sub.water_detector.set_detect();
+    		sub.leak_detector.set_detect();
     	break;
 
     }     // end switch

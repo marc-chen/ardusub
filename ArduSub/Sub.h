@@ -88,9 +88,7 @@
 #include <AP_RPM/AP_RPM.h>
 #include <AC_InputManager/AC_InputManager.h>        // Pilot input handling library
 #include <AP_JSButton/AP_JSButton.h>   // Joystick/gamepad button function assignment
-#include <AP_WaterDetector/AP_WaterDetector.h> // Water detector
-
-// Configuration
+#include "../libraries/AP_LeakDetector/AP_LeakDetector.h" // Leak detector
 #include "defines.h"
 #include "config.h"
 
@@ -167,7 +165,7 @@ private:
 
     AP_GPS gps;
 
-    AP_WaterDetector water_detector;
+    AP_LeakDetector leak_detector;
 
     // flight modes convenience array
     AP_Int8 *flight_modes;
@@ -449,6 +447,8 @@ private:
     // bearing from current location to the yaw_look_at_WP
     float yaw_look_at_WP_bearing;
 
+    float yaw_xtrack_correct_heading;
+
     // yaw used for YAW_LOOK_AT_HEADING yaw_mode
     int32_t yaw_look_at_heading;
 
@@ -567,6 +567,7 @@ private:
 
 	uint32_t last_pilot_heading;
 	uint32_t last_pilot_yaw_input_ms;
+	uint32_t fs_terrain_recover_start_ms = 0;
 
 #if GNDEFFECT_COMPENSATION == ENABLED
     // ground effect detector
@@ -856,7 +857,6 @@ private:
     void failsafe_terrain_check();
     void failsafe_terrain_set_status(bool data_ok);
     void failsafe_terrain_on_event();
-    void set_mode_RTL_or_land_with_pause(mode_reason_t reason);
     void update_events();
     void failsafe_enable();
     void failsafe_disable();
@@ -1053,6 +1053,12 @@ private:
     void set_leak_status(bool status);
     void failsafe_internal_pressure_check();
     void failsafe_internal_temperature_check();
+
+    void failsafe_terrain_act(void);
+    bool auto_terrain_recover_start(void);
+    void auto_terrain_recover_run(void);
+
+    void translate_wpnav_rp(float &lateral_out, float &forward_out);
 
     bool surface_init(bool ignore_flags);
     void surface_run();
