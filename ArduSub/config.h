@@ -358,8 +358,8 @@
 //////////////////////////////////////////////////////////////////////////////
 // CAMERA TRIGGER AND CONTROL
 //
-// 有云台，这里可以关闭了
-# define CAMERA         DISABLED
+// 有云台，这里可以关闭了，但代码中有bug，关闭的好处不明显，先不关!!!
+// # define CAMERA         DISABLED
 #ifndef CAMERA
  # define CAMERA        ENABLED
 #endif
