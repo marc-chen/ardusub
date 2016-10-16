@@ -997,10 +997,12 @@ const AP_Param::Info Sub::var_info[] = {
 	// @Path: ../libraries/AP_Motors/AP_Motors6DOF.cpp
 	GOBJECT(motors, "MOT_",         AP_Motors6DOF),
 
+	// 这里直接去掉注释会导致飞控启动失败，看来不能有两个 Group 名
+
 //#else
 //    // @Group: MOT_
 //    // @Path: ../libraries/AP_Motors/AP_MotorsMulticopter.cpp
-    GOBJECT(motors, "MOT_",         AP_MotorsMulticopter),
+//    GOBJECT(motors, "MOT_",         AP_MotorsMulticopter),
 //#endif
 
     // @Group: RCMAP_

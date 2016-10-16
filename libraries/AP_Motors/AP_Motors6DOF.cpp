@@ -91,6 +91,28 @@ const AP_Param::GroupInfo AP_Motors6DOF::var_info[] = {
 	// @User: Standard
 	AP_GROUPINFO("FV_CPLNG_K", 8, AP_Motors6DOF, _forwardVerticalCouplingFactor, 1.0),
 
+    // @Param: SPIN_MAX
+    // @DisplayName: Motor Spin maximum
+    // @Description: Point at which the thrust saturates expressed as a number from 0 to 1 in the entire output range
+    // @Values: 0.9:Low, 0.95:Default, 1.0:High
+    // @User: Advanced
+    AP_GROUPINFO("SPIN_MAX", 9, AP_MotorsMulticopter, _spin_max, 0.59f),
+
+    // @Param: SPIN_MIN
+    // @DisplayName: Motor Spin minimum
+    // @Description: Point at which the thrust starts expressed as a number from 0 to 1 in the entire output range
+    // @Values: 0.0:Low, 0.15:Default, 0.3:High
+    // @User: Advanced
+    AP_GROUPINFO("SPIN_MIN", 10, AP_MotorsMulticopter, _spin_min, 0.01f),
+
+    // @Param: SPIN_ARM
+    // @DisplayName: Motor Spin armed
+    // @Description: Point at which the motors start to spin expressed as a number from 0 to 1 in the entire output range
+    // @Values: 0.0:Low, 0.1:Default, 0.2:High
+    // @User: Advanced
+    AP_GROUPINFO("SPIN_ARM", 11, AP_MotorsMulticopter, _spin_arm, 0.01f),
+
+
     AP_GROUPEND
 };
 
