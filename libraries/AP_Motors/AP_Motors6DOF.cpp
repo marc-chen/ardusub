@@ -96,14 +96,14 @@ const AP_Param::GroupInfo AP_Motors6DOF::var_info[] = {
     // @Description: Point at which the thrust saturates expressed as a number from 0 to 1 in the entire output range
     // @Values: 0.9:Low, 0.95:Default, 1.0:High
     // @User: Advanced
-    AP_GROUPINFO("SPIN_MAX", 9, AP_MotorsMulticopter, _spin_max, 0.59f),
+    AP_GROUPINFO("SPIN_MAX", 9, AP_MotorsMulticopter, _spin_max, 0.20f),
 
     // @Param: SPIN_MIN
     // @DisplayName: Motor Spin minimum
     // @Description: Point at which the thrust starts expressed as a number from 0 to 1 in the entire output range
     // @Values: 0.0:Low, 0.15:Default, 0.3:High
     // @User: Advanced
-    AP_GROUPINFO("SPIN_MIN", 10, AP_MotorsMulticopter, _spin_min, 0.01f),
+    AP_GROUPINFO("SPIN_MIN", 10, AP_MotorsMulticopter, _spin_min, 0.02f),
 
     // @Param: SPIN_ARM
     // @DisplayName: Motor Spin armed
