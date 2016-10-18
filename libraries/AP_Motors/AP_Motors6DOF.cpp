@@ -96,22 +96,28 @@ const AP_Param::GroupInfo AP_Motors6DOF::var_info[] = {
     // @Description: Point at which the thrust saturates expressed as a number from 0 to 1 in the entire output range
     // @Values: 0.9:Low, 0.95:Default, 1.0:High
     // @User: Advanced
-    AP_GROUPINFO("SPIN_MAX", 9, AP_MotorsMulticopter, _spin_max, 0.20f),
+    AP_GROUPINFO("1_SCALE_MAX",  9, AP_Motors6DOF, _motor_scale_max[0], 1.0f),
+    AP_GROUPINFO("2_SCALE_MAX", 10, AP_Motors6DOF, _motor_scale_max[1], 1.0f),
+    AP_GROUPINFO("3_SCALE_MAX", 11, AP_Motors6DOF, _motor_scale_max[2], 1.0f),
+    AP_GROUPINFO("4_SCALE_MAX", 12, AP_Motors6DOF, _motor_scale_max[3], 1.0f),
+    AP_GROUPINFO("5_SCALE_MAX", 13, AP_Motors6DOF, _motor_scale_max[4], 1.0f),
+    AP_GROUPINFO("6_SCALE_MAX", 14, AP_Motors6DOF, _motor_scale_max[5], 1.0f),
+    AP_GROUPINFO("7_SCALE_MAX", 15, AP_Motors6DOF, _motor_scale_max[6], 1.0f),
+    AP_GROUPINFO("8_SCALE_MAX", 16, AP_Motors6DOF, _motor_scale_max[7], 1.0f),
 
     // @Param: SPIN_MIN
     // @DisplayName: Motor Spin minimum
     // @Description: Point at which the thrust starts expressed as a number from 0 to 1 in the entire output range
     // @Values: 0.0:Low, 0.15:Default, 0.3:High
     // @User: Advanced
-    AP_GROUPINFO("SPIN_MIN", 10, AP_MotorsMulticopter, _spin_min, 0.02f),
-
-    // @Param: SPIN_ARM
-    // @DisplayName: Motor Spin armed
-    // @Description: Point at which the motors start to spin expressed as a number from 0 to 1 in the entire output range
-    // @Values: 0.0:Low, 0.1:Default, 0.2:High
-    // @User: Advanced
-    AP_GROUPINFO("SPIN_ARM", 11, AP_MotorsMulticopter, _spin_arm, 0.01f),
-
+    AP_GROUPINFO("1_SCALE_MIN", 17, AP_Motors6DOF, _motor_scale_min[0], 1.0f),
+    AP_GROUPINFO("2_SCALE_MIN", 18, AP_Motors6DOF, _motor_scale_min[1], 1.0f),
+    AP_GROUPINFO("3_SCALE_MIN", 19, AP_Motors6DOF, _motor_scale_min[2], 1.0f),
+    AP_GROUPINFO("4_SCALE_MIN", 20, AP_Motors6DOF, _motor_scale_min[3], 1.0f),
+    AP_GROUPINFO("5_SCALE_MIN", 21, AP_Motors6DOF, _motor_scale_min[4], 1.0f),
+    AP_GROUPINFO("6_SCALE_MIN", 22, AP_Motors6DOF, _motor_scale_min[5], 1.0f),
+    AP_GROUPINFO("7_SCALE_MIN", 23, AP_Motors6DOF, _motor_scale_min[6], 1.0f),
+    AP_GROUPINFO("8_SCALE_MIN", 24, AP_Motors6DOF, _motor_scale_min[7], 1.0f),
 
     AP_GROUPEND
 };
@@ -150,10 +156,12 @@ void AP_Motors6DOF::output_min()
     hal.rcout->push();
 }
 
+/*
 int16_t AP_Motors6DOF::calc_thrust_to_pwm(float thrust_in) const
 {
     return constrain_int16(1500 + thrust_in * 400, _throttle_radio_min, _throttle_radio_max);
 }
+*/
 
 void AP_Motors6DOF::output_to_motors()
 {
@@ -184,7 +192,7 @@ void AP_Motors6DOF::output_to_motors()
             // set motor output based on thrust requests
             for (i=0; i<AP_MOTORS_MAX_NUM_MOTORS; i++) {
                 if (motor_enabled[i]) {
-                    motor_out[i] = calc_thrust_to_pwm(_thrust_rpyt_out[i]);
+                    motor_out[i] = calc_thrust_to_pwm(i, _thrust_rpyt_out[i]);
                 }
             }
             break;
@@ -265,5 +273,14 @@ void AP_Motors6DOF::output_armed_stabilizing()
         if (motor_enabled[i]) {
         	_thrust_rpyt_out[i] = constrain_float(_motor_reverse[i]*(rpy_out[i] + linear_out[i]),-1.0f,1.0f);
         }
+    }
+}
+
+int16_t AP_Motors6DOF::calc_thrust_to_pwm(int8_t i, float thrust_in) const
+{
+    if (thrust_in >= 0) {
+        return constrain_int16(1500 + thrust_in * 400 * _motor_scale_max[i], _throttle_radio_min, _throttle_radio_max);
+    } else {
+        return constrain_int16(1500 + thrust_in * 400 * _motor_scale_min[i], _throttle_radio_min, _throttle_radio_max);
     }
 }

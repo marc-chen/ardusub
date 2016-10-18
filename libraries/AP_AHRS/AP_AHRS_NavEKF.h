@@ -37,6 +37,8 @@
 #define AP_AHRS_NAVEKF_AVAILABLE 1
 #define AP_AHRS_NAVEKF_SETTLE_TIME_MS 20000     // time in milliseconds the ekf needs to settle after being started
 
+// 实际只启用了EKF2，关闭了EKF1，说是出于flash空间的问题，难道可以同时启用？好处是？
+// TODO: 启用EKF1
 /*
   we are too close to running out of flash on px4, so disable
   it. Leave it enabled on V4 for now as that has sufficient flash

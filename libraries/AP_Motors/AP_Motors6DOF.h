@@ -26,7 +26,9 @@ public:
 
     void output_min() override;
 
+    /*
     int16_t calc_thrust_to_pwm(float thrust_in) const;
+    */
 
     // output_to_motors - sends minimum values out to the motors
     void output_to_motors() override;
@@ -49,6 +51,14 @@ protected:
     float               _throttle_factor[AP_MOTORS_MAX_NUM_MOTORS]; // each motors contribution to throttle (climb/descent)
     float               _forward_factor[AP_MOTORS_MAX_NUM_MOTORS]; // each motors contribution to forward/backward
     float               _lateral_factor[AP_MOTORS_MAX_NUM_MOTORS];  // each motors contribution to lateral (left/right)
+
+    // 电机正反转时，可能按比例缩放
+    AP_Float            _motor_scale_min[8];      // throttle out ratio which produces the minimum thrust.  (i.e. 0 ~ 1 ) of the full throttle range
+    AP_Float            _motor_scale_max[8];      // throttle out ratio which produces the maximum thrust.  (i.e. 0 ~ 1 ) of the full throttle range
+
+    // convert thrust (0~1) range back to pwm range
+    int16_t             calc_thrust_to_pwm(int8_t i, float thrust_in) const;
+
 };
 
 #endif  // AP_MOTORS6DOF
