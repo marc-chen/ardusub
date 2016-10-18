@@ -138,7 +138,7 @@ void AC_AttitudeControl::relax_attitude_controllers()
  * measured: 测量结结果，反馈控制用，
  *
  *
- * 先 angle controller，再 rate controllers
+ * 先 angle controller，再 rate controllers，因为对于飞机，机身偏移的角度对速度影响很大
  *
  * target angular velocities  ----------------------------------------------------- fed ---> _ rate controllers
  *                                                                                         +/
