@@ -497,6 +497,7 @@ void Sub::one_hz_loop()
         // check the user hasn't updated the frame orientation
         motors.set_frame_orientation(g.frame_orientation);
 
+        // 来自配置 RC3_MI, RC3_MAX
         // set all throttle channel settings
         motors.set_throttle_range(channel_throttle->get_radio_min(), channel_throttle->get_radio_max());
     }

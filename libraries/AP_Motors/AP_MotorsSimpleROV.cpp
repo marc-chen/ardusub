@@ -18,6 +18,12 @@
  *
  */
 
+/*
+ * 只有3个电机，关闭多余的电机（最多支持5个）
+ * 另外，垂直电机也贡献 pitch，修正一下
+ */
+#define SIMPLE_MOTER_NUM   3
+
 #include "AP_MotorsSimpleROV.h"
 
 // setup_motors - configures the motors for the BlueROV
@@ -46,12 +52,19 @@ void AP_MotorsSimpleROV::setup_motors()
 
 		// Right vertical thruster
 		MOT_3_ROLL_FACTOR = 0,
-		MOT_3_PITCH_FACTOR = 0,
+
+        // TODO: 1 or -1 ?
+		MOT_3_PITCH_FACTOR = 1,
+
+        // TODO: 其实也有一点点，测试时可以观察一下
 		MOT_3_YAW_FACTOR = 0,
+
 		MOT_3_THROTTLE_FACTOR = -1,
 		MOT_3_FORWARD_FACTOR = 0,
-		MOT_3_STRAFE_FACTOR = 0,
+		MOT_3_STRAFE_FACTOR = 0;
 
+#if SIMPLE_MOTER_NUM == 5
+    float
 		// Left Vertical thruster
 		MOT_4_ROLL_FACTOR = 0,
 		MOT_4_PITCH_FACTOR = 0,
@@ -67,10 +80,14 @@ void AP_MotorsSimpleROV::setup_motors()
 		MOT_5_THROTTLE_FACTOR = 0,
 		MOT_5_FORWARD_FACTOR = 0,
 		MOT_5_STRAFE_FACTOR = 1;
+#endif
+
 
 	add_motor_raw_6dof(AP_MOTORS_MOT_1, MOT_1_ROLL_FACTOR, MOT_1_PITCH_FACTOR, MOT_1_YAW_FACTOR, MOT_1_THROTTLE_FACTOR, MOT_1_FORWARD_FACTOR, MOT_1_STRAFE_FACTOR,1);
 	add_motor_raw_6dof(AP_MOTORS_MOT_2, MOT_2_ROLL_FACTOR, MOT_2_PITCH_FACTOR, MOT_2_YAW_FACTOR, MOT_2_THROTTLE_FACTOR, MOT_2_FORWARD_FACTOR, MOT_2_STRAFE_FACTOR,2);
 	add_motor_raw_6dof(AP_MOTORS_MOT_3, MOT_3_ROLL_FACTOR, MOT_3_PITCH_FACTOR, MOT_3_YAW_FACTOR, MOT_3_THROTTLE_FACTOR, MOT_3_FORWARD_FACTOR, MOT_3_STRAFE_FACTOR,3);
+#if SIMPLE_MOTER_NUM == 5
 	add_motor_raw_6dof(AP_MOTORS_MOT_4, MOT_4_ROLL_FACTOR, MOT_4_PITCH_FACTOR, MOT_4_YAW_FACTOR, MOT_4_THROTTLE_FACTOR, MOT_4_FORWARD_FACTOR, MOT_4_STRAFE_FACTOR,4);
 	add_motor_raw_6dof(AP_MOTORS_MOT_5, MOT_5_ROLL_FACTOR, MOT_5_PITCH_FACTOR, MOT_5_YAW_FACTOR, MOT_5_THROTTLE_FACTOR, MOT_5_FORWARD_FACTOR, MOT_5_STRAFE_FACTOR,5);
+#endif
 }

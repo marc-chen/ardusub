@@ -39,11 +39,24 @@ void Sub::update_surface_and_bottom_detector()
 			set_surfaced(current_depth > g.surface_depth/100.0 - 0.05); // add a 5cm buffer so it doesn't trigger too often
 		} else {
 		    // 小于阈值（10cm）即认为是水面了
+		    /*
 			set_surfaced(current_depth > g.surface_depth/100.0); // If we are above surface depth, we are surfaced
+			*/
+		    // 水面检测，增加延时判断，避免拉动
+		    if (current_depth > g.surface_depth/100.0) {
+	            if( surface_detector_count < ((float)SURFACE_DETECTOR_TRIGGER_SEC)*MAIN_LOOP_RATE) {
+	                surface_detector_count++;
+	            } else {
+	                set_surfaced(true);
+	            }
+		    } else {
+		        set_surfaced(false);
+		    }
 		}
 
 
 		// 传感器对于底部判断，没有帮助
+		// 到达水底的条件：油门向下最大持续BOTTOM_DETECTOR_TRIGGER_SEC秒且速度基本不变
 		if(motors.limit.throttle_lower && vel_stationary) {
 			// bottom criteria met - increment the counter and check if we've triggered
 			if( bottom_detector_count < ((float)BOTTOM_DETECTOR_TRIGGER_SEC)*MAIN_LOOP_RATE) {

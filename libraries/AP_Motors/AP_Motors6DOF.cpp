@@ -83,6 +83,7 @@ const AP_Param::GroupInfo AP_Motors6DOF::var_info[] = {
 	// @User: Standard
 	AP_GROUPINFO("8_DIRECTION", 7, AP_Motors6DOF, _motor_reverse[7], 1),
 
+	// 仅 AP_MotorsVectoredROV有使用
 	// @Param: FV_CPLNG_K
 	// @DisplayName: Forward/vertical to pitch decoupling factor
 	// @Description: Used to decouple pitch from forward/vertical motion. 0 to disable, 1.2 normal
@@ -278,9 +279,16 @@ void AP_Motors6DOF::output_armed_stabilizing()
 
 int16_t AP_Motors6DOF::calc_thrust_to_pwm(int8_t i, float thrust_in) const
 {
+    /*
+     * 暂时先用 _throttle_radio_min, _throttle_radio_max（通过 RC3_MIN,RC3_MAX可配置）
+     * 未来可考虑分别指定各电机的 pwm范围，参考AP_MotorsMulticopter中的PWM_MIN,PWM_MAX
+     */
+    //
+    int16_t pwm_mid = (_throttle_radio_max + _throttle_radio_min)/2; // 1500
+    int16_t pwm_gap = (_throttle_radio_max - _throttle_radio_min)/2; // 400
     if (thrust_in >= 0) {
-        return constrain_int16(1500 + thrust_in * 400 * _motor_scale_max[i], _throttle_radio_min, _throttle_radio_max);
+        return constrain_int16(pwm_mid + thrust_in * pwm_gap * _motor_scale_max[i], _throttle_radio_min, _throttle_radio_max);
     } else {
-        return constrain_int16(1500 + thrust_in * 400 * _motor_scale_min[i], _throttle_radio_min, _throttle_radio_max);
+        return constrain_int16(pwm_mid + thrust_in * pwm_gap * _motor_scale_min[i], _throttle_radio_min, _throttle_radio_max);
     }
 }

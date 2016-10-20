@@ -12,8 +12,9 @@
 #define ENABLE ENABLED
 #define DISABLE DISABLED
 
-#define BOTTOM_DETECTOR_TRIGGER_SEC 1.0
-#define SURFACE_DETECTOR_TRIGGER_SEC 1.0
+// 改为3秒，1秒太敏感
+#define BOTTOM_DETECTOR_TRIGGER_SEC 3.0
+#define SURFACE_DETECTOR_TRIGGER_SEC 3.0
 
 // Autopilot Yaw Mode enumeration
 enum autopilot_yaw_mode {

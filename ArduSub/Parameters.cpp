@@ -543,6 +543,7 @@ const AP_Param::Info Sub::var_info[] = {
     // 姿态控制时的油门感觉，<软---硬>
     GSCALAR(rc_feel_rp, "RC_FEEL_RP",  RC_FEEL_RP_MEDIUM),
 
+    // 这两个参数，仅 Copter 需要，sub不需要
 #if POSHOLD_ENABLED == ENABLED
     // @Param: PHLD_BRAKE_RATE
     // @DisplayName: PosHold braking rate

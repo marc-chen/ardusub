@@ -104,6 +104,7 @@ void Sub::althold_run()
     update_simple_mode();
 
     // 默认的控制，没有为roll设置按键
+    // 定深也有姿态控制，最大角度也是通过参数ANGLE_MAX来控制
     // get pilot desired lean angles
     float target_roll, target_pitch;
     get_pilot_desired_lean_angles(channel_roll->get_control_in(), channel_pitch->get_control_in(), target_roll, target_pitch, attitude_control.get_althold_lean_angle_max());
@@ -161,18 +162,26 @@ void Sub::althold_run()
 	    pos_control.relax_alt_hold_controllers(0.0); // clear velocity and position targets, and integrator
 		pos_control.set_alt_target(inertial_nav.get_altitude() + 10.0f); // set target to 10 cm above bottom
 	} else {
-		// ? 这里表面相关的逻辑，是不是应该使用 ap.at_surface ?
+	    /*
+        // 当前深度<表面深度，说明在更深的地方（注意深度是负数，越深绝对值越大），绝大部分都走这个分支
 	    if(inertial_nav.get_altitude() < g.surface_depth) { // pilot allowed to move up or down freely
-			// 绝大部分都走这个分支
+	    */
+        // 已经有了水面检测，直接使用，看一下效果
+	    if (! ap.at_surface) {
 	        pos_control.set_alt_target_from_climb_rate_ff(target_climb_rate, G_Dt, false);
-		} else if(target_climb_rate < 0) { // pilot allowed to move only down freely
-			if(pos_control.get_vel_target_z() > 0) {
-				// 已经到达水面，油门向下，但实际还在向上走。此时从当前状态重新设定参数
+		}
+
+        // 已经在水面，期望向下走，摆脱水面
+	    else if(target_climb_rate < 0) { // pilot allowed to move only down freely
+		    if(pos_control.get_vel_target_z() > 0) {
+				// 但实际还在向上走，可能是一个非常正常的急速操作。此时从当前状态重新设定参数
 			    pos_control.relax_alt_hold_controllers(0); // reset target velocity and acceleration
 			}
 			pos_control.set_alt_target_from_climb_rate_ff(target_climb_rate, G_Dt, false);
-		} else if(pos_control.get_alt_target() > g.surface_depth) { // hold depth at surface level.
-			// 如果已经在水面了，则保持在水面深度
+		}
+
+        // 如果已经在水面了，设置target深度为水面深度，避免越界
+	    else if(pos_control.get_alt_target() > g.surface_depth) { // hold depth at surface level.
 		    pos_control.set_alt_target(g.surface_depth);
 		}
 	}
