@@ -86,6 +86,7 @@ AC_PosControl::AC_PosControl(const AP_AHRS& ahrs, const AP_InertialNav& inav,
 ///
 
 
+// 只在初始化时设置了一次，因为主频是400，设置的参数是 0.0025，与构造函数中的初始值相同
 /// set_dt - sets time delta in seconds for all controllers (i.e. 100hz = 0.01, 400hz = 0.0025)
 void AC_PosControl::set_dt(float delta_sec)
 {
@@ -122,7 +123,7 @@ void AC_PosControl::set_speed_z(float speed_down, float speed_up)
     }
 }
 
-/// set_accel_z - set vertical acceleration in cm/s/s
+/// set_accel_z - set max vertical acceleration in cm/s/s
 void AC_PosControl::set_accel_z(float accel_cmss)
 {
     // 绝对值差距 >1 才更新，更改为 >=1，why ?
@@ -212,6 +213,7 @@ void AC_PosControl::set_alt_target_from_climb_rate_ff(float climb_rate_cms, floa
     if (_vel_desired.z > _speed_max_up_cms && !is_zero(_speed_max_up_cms)) {
         accel_z_cms *= POSCONTROL_OVERSPEED_GAIN_Z * _vel_desired.z / _speed_max_up_cms;
     }
+    // 这里居然写死了最大速度 750 cm/s
     accel_z_cms = constrain_float(accel_z_cms, 0.0f, 750.0f);
 
     // jerk_z is calculated to reach full acceleration in 1000ms.
@@ -270,13 +272,14 @@ void AC_PosControl::add_takeoff_climb_rate(float climb_rate_cms, float dt)
 /// relax_alt_hold_controllers - set all desired and targets to measured
 void AC_PosControl::relax_alt_hold_controllers(float throttle_setting)
 {
-    // TODO:目标深度，取自当前深度，为何不用传感器的值？
+    // 1. set_alt_target
     _pos_target.z = _inav.get_altitude();
 
     /*
      * vel
+     * 2. set_desired_velocity_z
      */
-    // TODO:定深初始化时，_vel_desired.z设置为inertial_nav.get_velocity_z()返回的当前速度，怎么这里设为0？
+    // TODO:定深初始化时，_vel_desired.z 设置为 inertial_nav.get_velocity_z() 返回的当前速度，怎么这里设为0？
     _vel_desired.z = 0.0f;
 
     // ?? 这里取false，是不是因为_vel_desired.z默认为0？
@@ -372,6 +375,7 @@ bool AC_PosControl::is_active_z() const
 /// update_z_controller - fly to altitude in cm above home
 void AC_PosControl::update_z_controller()
 {
+    // 如果与上一次的时间相差太久，则全马力
     // check time since last cast
     uint32_t now = AP_HAL::millis();
     if (now - _last_update_z_ms > POSCONTROL_ACTIVE_TIMEOUT_MS) {
@@ -412,6 +416,7 @@ void AC_PosControl::pos_to_rate_z()
     // calculate altitude error
     _pos_error.z = _pos_target.z - curr_alt;
 
+    // 限制测试量与目标值的减值的最大范围，不可能差别太大，因为是性能系统，否则可能是传感器失效
     // do not let target altitude get too far from current altitude
     if (_pos_error.z > _leash_up_z) {
         _pos_target.z = curr_alt + _leash_up_z;
@@ -424,6 +429,7 @@ void AC_PosControl::pos_to_rate_z()
         _limit.pos_down = true;
     }
 
+    // 由相差的距离，反推需要什么的速度才能追赶上
     // calculate _vel_target.z using from _pos_error.z using sqrt controller
     _vel_target.z = AC_AttitudeControl::sqrt_controller(_pos_error.z, _p_pos_z.kP(), _accel_max_z_cms);
 

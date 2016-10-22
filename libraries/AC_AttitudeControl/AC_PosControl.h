@@ -105,7 +105,7 @@ public:
     /// get_vel_target_z - returns current vertical speed in cm/s
     float get_vel_target_z() const { return _vel_target.z; }
 
-    /// set_accel_z - set vertical acceleration in cm/s/s
+    /// set_accel_z - set max vertical acceleration in cm/s/s
     ///     leash length will be recalculated the next time update_z_controller() is called
     void set_accel_z(float accel_cmss);
 
@@ -116,6 +116,7 @@ public:
     ///     called by pos_to_rate_z if z-axis speed or accelerations are changed
     void calc_leash_length_z();
 
+    /// target = desired ?
     /// set_alt_target - set altitude target in cm above home
     void set_alt_target(float alt_cm) { _pos_target.z = alt_cm; }
 

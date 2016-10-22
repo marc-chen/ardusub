@@ -519,6 +519,10 @@
 # define THR_DZ_DEFAULT         100             // the deadzone above and below mid throttle while in althold or loiter
 #endif
 
+/*
+ * 深度P控制器参数
+ * 默认 1.0f 时，会出现磕头的现象，可以通过参数POS_Z_P来调节
+ */
 #ifndef ALT_HOLD_P
  # define ALT_HOLD_P            1.0f
 #endif

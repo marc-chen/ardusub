@@ -1,5 +1,10 @@
 # find key paths and system type
 
+#
+# 应该有这个选项, for sub
+# #define APM_BUILD_ArduSub		 7
+APM_BUILD_DIRECTORY	:= 7
+
 # Save the system type for later use.
 #
 SYSTYPE			:=	$(shell uname)

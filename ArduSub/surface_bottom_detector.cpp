@@ -35,7 +35,7 @@ void Sub::update_surface_and_bottom_detector()
 
 
 		if(ap.at_surface) {
-		    // 已经在水面时，阈值放宽5cm，避免抖动
+		    // 已经在水面时，阈值放宽5cm，避免抖动。有可能马上就进入非水面状态，太敏感了
 			set_surfaced(current_depth > g.surface_depth/100.0 - 0.05); // add a 5cm buffer so it doesn't trigger too often
 		} else {
 		    // 小于阈值（10cm）即认为是水面了
@@ -50,6 +50,7 @@ void Sub::update_surface_and_bottom_detector()
 	                set_surfaced(true);
 	            }
 		    } else {
+                surface_detector_count = 0;
 		        set_surfaced(false);
 		    }
 		}
@@ -66,7 +67,9 @@ void Sub::update_surface_and_bottom_detector()
 			}
 
 		} else {
-			set_bottomed(false);
+            bottom_detector_count = 0;
+            // TODO: 离开 bottom 太快了 ?
+		    set_bottomed(false);
 		}
 
 	// with no external baro, the only thing we have to go by is a vertical velocity estimate
@@ -109,7 +112,6 @@ void Sub::update_surface_and_bottom_detector()
 }
 
 void Sub::set_surfaced(bool at_surface) {
-
 
 	if(ap.at_surface == at_surface) { // do nothing if state unchanged
 		return;
