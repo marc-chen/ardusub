@@ -9,7 +9,18 @@
 // althold_init - initialise althold controller
 bool Sub::althold_init(bool ignore_checks)
 {
-    gcs_send_text_fmt(MAV_SEVERITY_DEBUG, "call Sub::althold_init(ignore_checks = %d)", ignore_checks);
+    gcs_send_text(MAV_SEVERITY_DEBUG, "call Sub::althold_init");
+
+    /*
+     * 设置测试过的控制参数
+     */
+#if FRAME_CONFIG == SIMPLEROV_FRAME
+    g.p_alt_hold.kP(0.5f);  // POS_Z_P
+    // g.p_alt_hold.save_gains();
+    g.p_vel_z.kP(5.0f);     // VEL_Z_P
+    // g.pid_accel_z.   // ACCEL_Z_*
+    motors.set_motor_scale(2, 0.3f, 0.3f);
+#endif
 
 	if(!ap.depth_sensor_present) { // can't hold depth without a depth sensor, exit immediately.
 		gcs_send_text(MAV_SEVERITY_WARNING, "Depth hold requires external pressure sensor.");
@@ -20,36 +31,39 @@ bool Sub::althold_init(bool ignore_checks)
     // initialize vertical speeds and leash lengths
     // sets the maximum speed up and down returned by position controller
     pos_control.set_speed_z(-g.pilot_velocity_z_max, g.pilot_velocity_z_max);
+    /*
     gcs_send_text_fmt(MAV_SEVERITY_DEBUG, "althold_init: check set speed z: up %.1f cm/s down %.1f cm/s",
             pos_control.get_speed_up(),
             pos_control.get_speed_down());
+    */
 
     // 2. 设置最大加速度，来自配置 PILOT_ACCEL_Z
     pos_control.set_accel_z(g.pilot_accel_z);
+    /*
     gcs_send_text_fmt(MAV_SEVERITY_DEBUG, "althold_init: check set sccel z: %.1f cm/s/s",
                 pos_control.get_accel_z());
+    */
 
     // ?? 这里不何不直接调用relax_alt_hold_controllers?
 
     // 3. 设置目标深度, target or desired ?
     // initialise position and desired velocity
     pos_control.set_alt_target(inertial_nav.get_altitude());
-    gcs_send_text_fmt(MAV_SEVERITY_DEBUG, "althold_init: check set alt target: %.1f",
-                pos_control.get_alt_target());
+    gcs_send_text_fmt(MAV_SEVERITY_DEBUG, "althold_init: alt target: %.1f", pos_control.get_alt_target());
 
     // 4. 设置目标 z 速度
-    gcs_send_text_fmt(MAV_SEVERITY_DEBUG, "althold_init: inertial_nav.get_velocity_z: %.1f cm/s",
-            inertial_nav.get_velocity_z());
+    // gcs_send_text_fmt(MAV_SEVERITY_DEBUG, "althold_init: inertial_nav.get_velocity_z: %.1f cm/s",
+    //         inertial_nav.get_velocity_z());
     pos_control.set_desired_velocity_z(inertial_nav.get_velocity_z());
-    gcs_send_text_fmt(MAV_SEVERITY_DEBUG, "althold_init: after set_desired_velocity_z, get_desired_velocity: %f",
-                pos_control.get_desired_velocity().z);
+    // gcs_send_text_fmt(MAV_SEVERITY_DEBUG, "althold_init: after set_desired_velocity_z, get_desired_velocity: %f",
+    //             pos_control.get_desired_velocity().z);
 
     // stop takeoff if running
     takeoff_stop();
 
     last_pilot_heading = ahrs.yaw_sensor;
 
-    gcs_send_text(MAV_SEVERITY_DEBUG, "Sub::althold_init end");
+    // gcs_send_text(MAV_SEVERITY_DEBUG, "Sub::althold_init end");
     return true;
 }
 
@@ -71,10 +85,12 @@ void Sub::althold_run()
 	if (++counter_althold_run > 2*MAIN_LOOP_RATE) {
 	    counter_althold_run = 0;
 
-	    gcs_send_text_fmt(MAV_SEVERITY_DEBUG, "Sub::althold_run: baro alt: %.1f cm, inav alt: %.1f cm, inav z vel %.1f cm/s, "\
-	            "counter_relax: %d, motors.limit.throttle_lower: %d, motors.limit.throttle_upper: %d",
-	            barometer.get_altitude()*100, inertial_nav.get_altitude(), inertial_nav.get_velocity_z(),
-	            counter_relax, motors.limit.throttle_lower, motors.limit.throttle_upper);
+	    // motors.limit.throttle_lower, motors.limit.throttle_upper
+        gcs_send_text_fmt(MAV_SEVERITY_DEBUG, "alt: %.1f baro: %.1f inav: %.1f %.1f %d"\
+                "counter_relax: %d, motors.limit.throttle_lower: %d, motors.limit.throttle_upper: %d",
+                pos_control.get_alt_target(), barometer.get_altitude()*100, inertial_nav.get_altitude(),
+                inertial_nav.get_velocity_z(), counter_relax
+                );
 	}
 
 
@@ -102,7 +118,8 @@ void Sub::althold_run()
         attitude_control.set_throttle_out_unstabilized(0,true,g.throttle_filt);
 
         // 未解锁前，所以状态值都是读当前值，比如深度、方向
-        gcs_send_text(MAV_SEVERITY_DEBUG, "Sub::althold_run: relax_alt_hold_controllers when not armed");
+        //gcs_send_text(MAV_SEVERITY_DEBUG, "Sub::althold_run: relax_alt_hold_controllers when");
+        //gcs_send_text(MAV_SEVERITY_DEBUG, "relax when not armed");
         pos_control.relax_alt_hold_controllers(get_throttle_pre_takeoff(channel_throttle->get_control_in())-motors.get_throttle_hover());
         last_pilot_heading = ahrs.yaw_sensor;
         return;
@@ -179,10 +196,10 @@ void Sub::althold_run()
         // gcs_send_text(MAV_SEVERITY_DEBUG, "Sub::althold_run: relax_alt_hold_controllers when at bottom");
 	    pos_control.relax_alt_hold_controllers(0.0); // clear velocity and position targets, and integrator
 	    ++counter_relax;
-
+/*
 	    gcs_send_text_fmt(MAV_SEVERITY_DEBUG, "althold_run: at bottom, current altitude: %f, set target 10 cm above",
 	            inertial_nav.get_altitude());
-
+*/
 		pos_control.set_alt_target(inertial_nav.get_altitude() + 10.0f); // set target to 10 cm above bottom
 	} else {
 	    /*
@@ -215,8 +232,10 @@ void Sub::althold_run()
 
         // 如果已经在水面了，设置target深度为水面深度，避免越界
 	    else if(pos_control.get_alt_target() > g.surface_depth) { // hold depth at surface level.
+	        /*
 	        gcs_send_text_fmt(MAV_SEVERITY_DEBUG, "althold_run: at surface, pos_control.get_alt_target(%f) > g.surface_depth(%f),"\
 	                " reset alt target ", pos_control.get_alt_target(), g.surface_depth);
+	        */
 		    pos_control.set_alt_target(g.surface_depth);
 		}
 	}

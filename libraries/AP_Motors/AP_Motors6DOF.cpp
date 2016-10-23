@@ -292,3 +292,11 @@ int16_t AP_Motors6DOF::calc_thrust_to_pwm(int8_t i, float thrust_in) const
         return constrain_int16(pwm_mid + thrust_in * pwm_gap * _motor_scale_min[i], _throttle_radio_min, _throttle_radio_max);
     }
 }
+
+void AP_Motors6DOF::set_motor_scale(int8_t i, float min, float max)
+{
+    if (i >= 0 && i < AP_MOTORS_MAX_NUM_MOTORS) {
+        _motor_scale_min[i] = constrain_float(min, 0.001f, 1.0f);
+        _motor_scale_max[i] = constrain_float(max, 0.001f, 1.0f);
+    }
+}

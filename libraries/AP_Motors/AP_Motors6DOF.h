@@ -35,6 +35,9 @@ public:
 
     // var_info for holding Parameter information
 	static const struct AP_Param::GroupInfo        var_info[];
+
+	void set_motor_scale(int8_t i, float min, float max);
+
 protected:
 
 
@@ -53,8 +56,8 @@ protected:
     float               _lateral_factor[AP_MOTORS_MAX_NUM_MOTORS];  // each motors contribution to lateral (left/right)
 
     // 电机正反转时，可能按比例缩放
-    AP_Float            _motor_scale_min[8];      // throttle out ratio which produces the minimum thrust.  (i.e. 0 ~ 1 ) of the full throttle range
-    AP_Float            _motor_scale_max[8];      // throttle out ratio which produces the maximum thrust.  (i.e. 0 ~ 1 ) of the full throttle range
+    AP_Float            _motor_scale_min[AP_MOTORS_MAX_NUM_MOTORS];      // throttle out ratio which produces the minimum thrust.  (i.e. 0 ~ 1 ) of the full throttle range
+    AP_Float            _motor_scale_max[AP_MOTORS_MAX_NUM_MOTORS];      // throttle out ratio which produces the maximum thrust.  (i.e. 0 ~ 1 ) of the full throttle range
 
     // convert thrust (0~1) range back to pwm range
     int16_t             calc_thrust_to_pwm(int8_t i, float thrust_in) const;

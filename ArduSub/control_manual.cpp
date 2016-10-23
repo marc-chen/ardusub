@@ -11,6 +11,10 @@ bool Sub::manual_init(bool ignore_checks)
     // set target altitude to zero for reporting
     pos_control.set_alt_target(0);
 
+#if FRAME_CONFIG == SIMPLEROV_FRAME
+    motors.set_motor_scale(2, 1.0f, 1.0f);
+#endif
+
     return true;
 }
 
@@ -27,10 +31,16 @@ void Sub::manual_run()
 
     motors.set_desired_spool_state(AP_Motors::DESIRED_THROTTLE_UNLIMITED);
 
-    motors.set_roll(channel_roll->norm_input()*0.67f);
-    motors.set_pitch(channel_pitch->norm_input()*0.67f);
-    motors.set_yaw(channel_yaw->norm_input()*0.67f);
+#if FRAME_CONFIG == SIMPLEROV_FRAME
+    float _scale = 1.0f;
+#else
+    float _scale = 0.67f;
+#endif
+
+    motors.set_roll(channel_roll->norm_input()*_scale);
+    motors.set_pitch(channel_pitch->norm_input()*_scale);
+    motors.set_yaw(channel_yaw->norm_input()*_scale);
     motors.set_throttle(channel_throttle->norm_input());
-    motors.set_forward(channel_forward->norm_input()*0.67f);
-    motors.set_lateral(channel_lateral->norm_input()*0.67f);
+    motors.set_forward(channel_forward->norm_input()*_scale);
+    motors.set_lateral(channel_lateral->norm_input()*_scale);
 }
