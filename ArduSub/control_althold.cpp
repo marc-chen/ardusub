@@ -86,8 +86,7 @@ void Sub::althold_run()
 	    counter_althold_run = 0;
 
 	    // motors.limit.throttle_lower, motors.limit.throttle_upper
-        gcs_send_text_fmt(MAV_SEVERITY_DEBUG, "alt: %.1f baro: %.1f inav: %.1f %.1f %d"\
-                "counter_relax: %d, motors.limit.throttle_lower: %d, motors.limit.throttle_upper: %d",
+        gcs_send_text_fmt(MAV_SEVERITY_DEBUG, "alt: %.1f baro: %.1f inav: %.1f %.1f %d",
                 pos_control.get_alt_target(), barometer.get_altitude()*100, inertial_nav.get_altitude(),
                 inertial_nav.get_velocity_z(), counter_relax
                 );
